@@ -1,4 +1,4 @@
-package com.neekly_report.whirlwind;
+package com.neekly_report.whirlwind.common;
 
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -12,9 +12,9 @@ import java.util.Date;
 @Setter
 public class Common {
     @Temporal(TemporalType.TIMESTAMP)
-    @Comment("이름")
+    @Comment("생성일")
     private Date createDate;
     @Temporal(TemporalType.TIMESTAMP)
-    @Comment("이름")
+    @Comment("수정일")
     private Date modifyDate;
 }

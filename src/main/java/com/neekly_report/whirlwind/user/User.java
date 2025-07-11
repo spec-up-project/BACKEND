@@ -1,6 +1,6 @@
 package com.neekly_report.whirlwind.user;
 
-import com.neekly_report.whirlwind.Common;
+import com.neekly_report.whirlwind.common.Common;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
