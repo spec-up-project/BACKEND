@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
 @Table(name = "T_USER")
-public class User extends Common {
+public class User {
 
     @Id
     @Comment("사용자UID")
@@ -23,5 +25,12 @@ public class User extends Common {
     private String adminYn;
     @Comment("사용 여부")
     private String useYn;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Comment("생성일")
+    private Date createDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Comment("수정일")
+    private Date modifyDate;
 
 }

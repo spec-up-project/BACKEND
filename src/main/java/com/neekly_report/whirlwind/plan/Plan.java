@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "T_PLAN")
-public class Plan extends Common {
+public class Plan {
 
     @Id
     @Comment("일정ID")
@@ -34,5 +34,12 @@ public class Plan extends Common {
 
     @Comment("삭제여부")
     private String delYn;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Comment("생성일")
+    private Date createDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Comment("수정일")
+    private Date modifyDate;
 
 }
