@@ -1,8 +1,10 @@
 package com.neekly_report.whirlwind.user;
 
+import com.neekly_report.whirlwind.common.Common;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Comment;
 
 import java.util.Date;
@@ -11,10 +13,10 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "T_USER")
-public class User {
+public class User extends Common {
 
-    @Id
-    @Comment("사용자UID")
+    @Id @Comment("사용자UID")
+    @Column(name = "t_user_uid", nullable = false, updatable = false)
     private String tUserUid;
     @Comment("이름")
     private String userName;
@@ -24,12 +26,5 @@ public class User {
     private String adminYn;
     @Comment("사용 여부")
     private String useYn;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Comment("생성일")
-    private Date createDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Comment("수정일")
-    private Date modifyDate;
 
 }

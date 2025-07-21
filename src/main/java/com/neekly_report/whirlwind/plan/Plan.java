@@ -1,7 +1,10 @@
 package com.neekly_report.whirlwind.plan;
 
+import com.neekly_report.whirlwind.common.Common;
+import com.neekly_report.whirlwind.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
@@ -11,10 +14,11 @@ import java.util.Date;
 @Setter
 @Entity
 @Table(name = "T_PLAN")
-public class Plan {
+@NoArgsConstructor
+public class Plan extends Common {
 
-    @Id
-    @Comment("일정ID")
+    @Id @Comment("일정ID")
+    @Column(name = "t_plan_uid", nullable = false, updatable = false)
     private String tPlanUid;
 
     @Comment("제목")
@@ -34,11 +38,8 @@ public class Plan {
     @Comment("삭제여부")
     private String delYn;
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @Comment("생성일")
-    private Date createDate;
-    @Temporal(TemporalType.TIMESTAMP)
-    @Comment("수정일")
-    private Date modifyDate;
+    @ManyToOne
+    @JoinColumn(name = "t_user_uid")
+    private User user;
 
 }
