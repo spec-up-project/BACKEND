@@ -1,7 +1,5 @@
-package com.neekly_report.whirlwind.plan;
+package com.neekly_report.whirlwind.entity;
 
-import com.neekly_report.whirlwind.common.Common;
-import com.neekly_report.whirlwind.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,27 +17,27 @@ public class Plan extends Common {
 
     @Id @Comment("일정ID")
     @Column(nullable = false, updatable = false)
-    private String tPlanUid;
+    private String T_PLAN_UID;
 
     @Comment("제목")
-    private String planTitle;
+    private String PLAN_TITLE;
 
     @Comment("내용")
-    private String planContent;
+    private String PLAN_CONTENT;
 
     @Comment("예정시작일")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date planFromDate;
+    private Date PLAN_FROM_DATE;
 
     @Comment("예정종료일")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date planEndDate;
+    private Date PLAN_END_DATE;
 
     @Comment("삭제여부")
-    private String delYn;
+    private String DEL_YN;
 
     @ManyToOne
-    @JoinColumn(name = "tUserUid")
+    @JoinColumn(name = "T_USER_UID")
     private User user;
 
 }

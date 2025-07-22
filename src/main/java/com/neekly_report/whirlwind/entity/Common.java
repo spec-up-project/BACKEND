@@ -1,4 +1,4 @@
-package com.neekly_report.whirlwind.common;
+package com.neekly_report.whirlwind.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -20,10 +20,10 @@ public abstract class Common {
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("생성일")
     @Column(updatable = false)
-    private Date createDate;
+    private Date CREATE_DATE;
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("수정일")
-    private Date modifyDate;
+    private Date MODIFY_DATE;
 }

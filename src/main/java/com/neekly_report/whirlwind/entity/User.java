@@ -1,6 +1,5 @@
-package com.neekly_report.whirlwind.user;
+package com.neekly_report.whirlwind.entity;
 
-import com.neekly_report.whirlwind.common.Common;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -17,14 +16,14 @@ public class User extends Common {
 
     @Id @Comment("사용자UID")
     @Column(nullable = false, updatable = false)
-    private String tUserUid;
+    private String T_USER_UID;
     @Comment("이름")
-    private String userName;
+    private String USER_NAME;
     @Comment("비밀번호")
-    private String password;
+    private String PASSWORD;
     @Comment("관리자 여부")
-    private String adminYn;
+    private String ADMIN_YN;
     @Comment("사용 여부")
-    private String useYn;
+    private String USE_YN;
 
 }
