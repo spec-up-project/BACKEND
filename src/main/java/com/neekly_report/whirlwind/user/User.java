@@ -1,13 +1,13 @@
 package com.neekly_report.whirlwind.user;
 
 import com.neekly_report.whirlwind.common.Common;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Comment;
-
-import java.util.Date;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ import java.util.Date;
 public class User extends Common {
 
     @Id @Comment("사용자UID")
-    @Column(name = "t_user_uid", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private String tUserUid;
     @Comment("이름")
     private String userName;

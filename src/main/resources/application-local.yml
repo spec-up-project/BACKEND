@@ -4,10 +4,3 @@ spring:
     url: jdbc:mariadb://주소/디비
     username: NEEKY
     password: 비밀번호
-  jpa:
-    hibernate:
-      ddl-auto: update        # DB 초기화 전략 (none, create, create-drop, update, validate)
-    properties:
-      hibernate:
-        format_sql: true      # 쿼리 로그 포맷 (정렬)
-        show_sql: true        # 쿼리 로그 출력

@@ -18,7 +18,7 @@ import java.util.Date;
 public class Plan extends Common {
 
     @Id @Comment("일정ID")
-    @Column(name = "t_plan_uid", nullable = false, updatable = false)
+    @Column(nullable = false, updatable = false)
     private String tPlanUid;
 
     @Comment("제목")
@@ -39,7 +39,7 @@ public class Plan extends Common {
     private String delYn;
 
     @ManyToOne
-    @JoinColumn(name = "t_user_uid")
+    @JoinColumn(name = "tUserUid")
     private User user;
 
 }
