@@ -9,5 +9,7 @@ import java.util.List;
 @Repository
 public interface PlanRepository extends JpaRepository<Plan, String> {
 
+    List<Plan> findAll();
+
     List<Plan> findAllByUser_tUserUidOrderByPlanFromDateAsc(String tUserUid);
 }

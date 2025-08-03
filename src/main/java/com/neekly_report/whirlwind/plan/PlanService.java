@@ -13,8 +13,8 @@ public class PlanService implements PlanServiceImp{
     private final PlanRepository planRepository;
 
     @Override
-    public List<PlanDTO.PlanResponse> getPlanList(String tUserUid) {
+    public List<Plan> getPlanList(String tUserUid) {
 
-        return planRepository.findAllByUser_tUserUidOrderByPlanFromDateAsc(tUserUid);
+        return planRepository.findAll();
     }
 }

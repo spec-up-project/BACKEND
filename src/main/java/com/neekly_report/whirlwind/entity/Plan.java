@@ -15,29 +15,34 @@ import java.util.Date;
 @NoArgsConstructor
 public class Plan extends Common {
 
-    @Id @Comment("일정ID")
-    @Column(nullable = false, updatable = false)
-    private String T_PLAN_UID;
+    @Id
+    @Comment("일정ID")
+    @Column(name = "T_PLAN_UID", nullable = false, updatable = false)
+    private String tPlanUid;
 
     @Comment("제목")
-    private String PLAN_TITLE;
+    @Column(name = "PLAN_TITLE")
+    private String planTitle;
 
     @Comment("내용")
-    private String PLAN_CONTENT;
+    @Column(name = "PLAN_CONTENT")
+    private String planContent;
 
     @Comment("예정시작일")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date PLAN_FROM_DATE;
+    @Column(name = "PLAN_FROM_DATE")
+    private Date planFromDate;
 
     @Comment("예정종료일")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date PLAN_END_DATE;
+    @Column(name = "PLAN_END_DATE")
+    private Date planEndDate;
 
     @Comment("삭제여부")
-    private String DEL_YN;
+    @Column(name = "DEL_YN")
+    private String delYn;
 
     @ManyToOne
     @JoinColumn(name = "T_USER_UID")
     private User user;
-
 }

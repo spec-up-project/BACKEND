@@ -14,8 +14,9 @@ public class UserDTO {
         private String tUserUid;
     }
 
-    @Data
-    @SuperBuilder
+    @EqualsAndHashCode(callSuper = true)
+    @Getter
+    @NoArgsConstructor
     public static class UserResponse extends CommonDTO {
         private String tUserUid;
         private String userName;

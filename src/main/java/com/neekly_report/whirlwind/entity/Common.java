@@ -19,11 +19,12 @@ public abstract class Common {
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("생성일")
-    @Column(updatable = false)
-    private Date CREATE_DATE;
+    @Column(name = "CREATE_DATE", updatable = false)
+    private Date createDate;
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("수정일")
-    private Date MODIFY_DATE;
+    @Column(name = "MODIFY_DATE")
+    private Date modifyDate;
 }
