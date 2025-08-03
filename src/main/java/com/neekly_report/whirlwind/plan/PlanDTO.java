@@ -17,7 +17,7 @@ public class PlanDTO {
         private String tPlanUid;
     }
 
-    @Data
+    @Getter
     @Builder
     @AllArgsConstructor
     public static class PlanResponse extends CommonDTO {

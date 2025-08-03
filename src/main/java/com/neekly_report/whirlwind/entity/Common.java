@@ -8,7 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,11 +20,11 @@ public abstract class Common {
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("생성일")
     @Column(name = "CREATE_DATE", updatable = false)
-    private Date createDate;
+    private LocalDateTime createDate;
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     @Comment("수정일")
     @Column(name = "MODIFY_DATE")
-    private Date modifyDate;
+    private LocalDateTime modifyDate;
 }

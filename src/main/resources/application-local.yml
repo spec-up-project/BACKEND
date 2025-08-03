@@ -1,6 +1,6 @@
 spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://주소/디비
+    url: jdbc:mariadb://146.56.98.230:3306/neeklyreportdb
     username: NEEKY
-    password: 비밀번호
+    password: rhksflwk#nr
