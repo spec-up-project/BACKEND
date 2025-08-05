@@ -1,10 +1,13 @@
 package com.neekly_report.whirlwind.common.Jwt;
 
+import com.neekly_report.whirlwind.user.UserDTO;
+import com.neekly_report.whirlwind.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -13,30 +16,33 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private final UserService userService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         String token = resolveToken(request);
+
         if (token != null && jwtUtil.validateAndGetClaims(token) != null) {
             Claims claims = jwtUtil.validateAndGetClaims(token);
-            String userId = claims.getSubject();
-            String email = (String) claims.get("email");
+            String email = claims.get("email", String.class);
 
-            // 인증 객체 생성 (권한은 생략, 필요시 추가)
+            // ⭐ UserDetail 객체 가져오기
+            UserDTO.UserDetail userDetail = (UserDTO.UserDetail) userService.loadUserByUsername(email);
+
+            // ⭐ 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(userId, null, null);
+                    new UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
+
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // Spring Security에 인증 정보 저장
+            // ⭐ 인증 정보 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
@@ -51,3 +57,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
+

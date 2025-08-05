@@ -2,6 +2,7 @@ package com.neekly_report.whirlwind.config;
 
 import com.neekly_report.whirlwind.common.Jwt.JwtAuthenticationFilter;
 import com.neekly_report.whirlwind.common.Jwt.JwtUtil;
+import com.neekly_report.whirlwind.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 public class SecurityConfiguration {
 
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -50,7 +52,7 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 // JWT 필터 추가
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
     }

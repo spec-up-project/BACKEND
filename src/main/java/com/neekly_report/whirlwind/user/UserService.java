@@ -6,6 +6,9 @@ import com.neekly_report.whirlwind.common.Jwt.RefreshTokenRepository;
 import com.neekly_report.whirlwind.entity.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserServiceImp {
+public class UserService implements UserServiceImp, UserDetailsService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
@@ -89,5 +92,12 @@ public class UserService implements UserServiceImp {
 
     public void logout(String tUserUid) {
         refreshTokenRepository.deleteById(tUserUid);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("해당 이메일의 사용자를 찾을 수 없습니다."));
+        return new UserDTO.UserDetail(user);
     }
 }

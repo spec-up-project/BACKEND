@@ -1,15 +1,76 @@
 package com.neekly_report.whirlwind.user;
 
 import com.neekly_report.whirlwind.common.CommonDTO;
+import com.neekly_report.whirlwind.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+
 
 @Builder
 public class UserDTO {
+    @Getter
+    public static class UserDetail extends CommonDTO implements UserDetails {
+        private final User user;
+
+        public UserDetail(User user) {
+            this.user = user;
+        }
+
+        public String getTUserUid() {
+            return user.getTUserUid();
+        }
+
+        public String getEmail() {
+            return user.getEmail();
+        }
+
+        public String getUserName() {
+            return user.getUserName();
+        }
+
+        @Override
+        public Collection<? extends GrantedAuthority> getAuthorities() {
+            // 권한이 필요하다면 이후 구현 (ex. ROLE_USER, ROLE_ADMIN)
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String getPassword() {
+            return user.getPassword();
+        }
+
+        @Override
+        public String getUsername() {
+            return user.getEmail(); // 로그인 ID로 email 사용
+        }
+
+        @Override
+        public boolean isAccountNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isAccountNonLocked() {
+            return true;
+        }
+
+        @Override
+        public boolean isCredentialsNonExpired() {
+            return true;
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return "Y".equals(user.getUseYn());
+        }
+    }
 
     public static class Request {
         @Getter
