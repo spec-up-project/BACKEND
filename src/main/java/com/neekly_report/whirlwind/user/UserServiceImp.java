@@ -7,5 +7,7 @@ import java.util.List;
 public interface UserServiceImp {
     List<User> getAllUsers();
 
-    UserDTO.Response.UserRegisterResponse createUser(UserDTO.Request.UserRegisterRequest dto);
+    UserDTO.Response.UserRegisterResponse register(UserDTO.Request.UserRegisterRequest dto);
+
+    UserDTO.Response.LoginResponse login(UserDTO.Request.LoginRequest request);
 }

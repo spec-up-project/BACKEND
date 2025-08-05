@@ -7,7 +7,7 @@ spring:
     active: local
   jpa:
     hibernate:
-      ddl-auto: update        # DB 초기화 전략 (none, create, create-drop, update, validate)
+      ddl-auto: create-drop        # DB 초기화 전략 (none, create, create-drop, update, validate)
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:

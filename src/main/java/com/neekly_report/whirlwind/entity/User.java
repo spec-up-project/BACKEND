@@ -1,11 +1,12 @@
 package com.neekly_report.whirlwind.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,16 +18,21 @@ import org.hibernate.annotations.Comment;
 public class User extends Common {
 
     @Id
-    @Comment("사용자UID")
-    @Column(name = "T_USER_UID", nullable = false, updatable = false)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "T_USER_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
     private String tUserUid;
 
     @Comment("이름")
-    @Column(name = "USER_NAME")
+    @Column(name = "USER_NAME", nullable = false)
     private String userName;
 
+    @Comment("이메일")
+    @Column(name = "EMAIL", nullable = false, unique = true)
+    private String email;
+
     @Comment("비밀번호")
-    @Column(name = "PASSWORD")
+    @Column(name = "PASSWORD", nullable = false)
     private String password;
 
     @Comment("관리자 여부")
