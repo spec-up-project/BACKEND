@@ -41,3 +41,15 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+// 환경별 deployUrl 설정
+ext {
+	deployUrl = 'http://localhost:8081/manager/text' // local 기본값
+}
+def env = project.hasProperty('env') ? project.getProperty('env') : 'local'
+
+if (env == 'dev') {
+	deployUrl = 'http://152.69.205.24:8081/manager/text'
+}
+
+println "Deploy URL: $deployUrl"
