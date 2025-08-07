@@ -54,7 +54,8 @@ public class DucklingService {
             requestBody.put("text", text);
             requestBody.put("locale", locale);
             requestBody.put("dims", List.of("time"));
-            
+            log.debug("Duckling 요청 JSON: {}", objectMapper.writeValueAsString(requestBody));
+
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
             
             // Duckling API 호출
@@ -63,7 +64,7 @@ public class DucklingService {
             // 응답 파싱
             JsonNode root = objectMapper.readTree(response.getBody());
             List<DateTimeInfo> results = new ArrayList<>();
-            
+
             for (JsonNode node : root) {
                 if (node.has("dim") && "time".equals(node.get("dim").asText())) {
                     JsonNode value = node.get("value");

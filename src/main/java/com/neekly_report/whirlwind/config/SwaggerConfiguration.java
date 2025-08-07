@@ -4,6 +4,8 @@ package com.neekly_report.whirlwind.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +26,19 @@ public class SwaggerConfiguration {
                 .description("Neekly Report API"); //설명
 
         return new OpenAPI()
-                .components(new Components())
+                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .components(new Components()
+                        .addSecuritySchemes("bearerAuth",
+                                new SecurityScheme()
+                                        .name("Authorization")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("Bearer")
+                                        .bearerFormat("JWT")
+                        )
+                )
                 .info(info)
                 .servers(List.of(server));
+
     }
 
 }
