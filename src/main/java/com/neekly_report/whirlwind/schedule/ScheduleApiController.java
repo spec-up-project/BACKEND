@@ -1,6 +1,7 @@
 package com.neekly_report.whirlwind.schedule;
 
-import com.neekly_report.whirlwind.user.UserDTO;
+import com.neekly_report.whirlwind.dto.ScheduleDto;
+import com.neekly_report.whirlwind.dto.UserDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,29 +22,29 @@ public class ScheduleApiController {
     private final NLPCalendarService nlpCalendarService;
 
     @PostMapping
-    public ResponseEntity<ScheduleDTO.Response.ScheduleResponse> createSchedule(
-            @RequestBody @Valid ScheduleDTO.Request.ScheduleCreateRequest request,
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> createSchedule(
+            @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDTO.Response.ScheduleResponse schedule = scheduleService.createSchedule(userDetail.getTUserUid(), request);
+        ScheduleDto.Response.ScheduleResponse schedule = scheduleService.createSchedule(userDetail.getTUserUid(), request);
         return ResponseEntity.ok(schedule);
     }
 
     @GetMapping
-    public ResponseEntity<List<ScheduleDTO.Response.ScheduleResponse>> getUserSchedules(
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> getUserSchedules(
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDTO.Response.ScheduleResponse> schedules = scheduleService.getUserSchedules(userDetail.getTUserUid());
+        List<ScheduleDto.Response.ScheduleResponse> schedules = scheduleService.getUserSchedules(userDetail.getTUserUid());
         return ResponseEntity.ok(schedules);
     }
 
     @PostMapping("/nlp/text")
-    public ResponseEntity<List<ScheduleDTO.Response.ScheduleResponse>> extractFromText(
-            @RequestBody @Valid ScheduleDTO.Request.TextBasedScheduleRequest request,
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> extractFromText(
+            @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request,
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDTO.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
-        List<ScheduleDTO.Response.ScheduleResponse> saved = extracted.stream()
+        List<ScheduleDto.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
+        List<ScheduleDto.Response.ScheduleResponse> saved = extracted.stream()
                 .map(schedule -> scheduleService.createSchedule(userDetail.getTUserUid(), schedule))
                 .collect(Collectors.toList());
 
@@ -51,12 +52,12 @@ public class ScheduleApiController {
     }
 
     @PostMapping("/nlp/preview")
-    public ResponseEntity<List<ScheduleDTO.Response.ExtractedSchedulePreview>> previewExtractedSchedules(
-            @RequestBody @Valid ScheduleDTO.Request.TextBasedScheduleRequest request) {
+    public ResponseEntity<List<ScheduleDto.Response.ExtractedSchedulePreview>> previewExtractedSchedules(
+            @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request) {
 
-        List<ScheduleDTO.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
-        List<ScheduleDTO.Response.ExtractedSchedulePreview> preview = extracted.stream()
-                .map(schedule -> ScheduleDTO.Response.ExtractedSchedulePreview.builder()
+        List<ScheduleDto.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
+        List<ScheduleDto.Response.ExtractedSchedulePreview> preview = extracted.stream()
+                .map(schedule -> ScheduleDto.Response.ExtractedSchedulePreview.builder()
                         .title(schedule.getTitle())
                         .content(schedule.getContent())
                         .startTime(schedule.getStartTime())
@@ -69,11 +70,11 @@ public class ScheduleApiController {
     }
 
     @PostMapping("/nlp/save-modified")
-    public ResponseEntity<ScheduleDTO.Response.ScheduleResponse> saveModifiedSchedule(
-            @RequestBody @Valid ScheduleDTO.Request.ModifyExtractedScheduleRequest request,
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> saveModifiedSchedule(
+            @RequestBody @Valid ScheduleDto.Request.ModifyExtractedScheduleRequest request,
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDTO.Request.ScheduleCreateRequest scheduleRequest = ScheduleDTO.Request.ScheduleCreateRequest.builder()
+        ScheduleDto.Request.ScheduleCreateRequest scheduleRequest = ScheduleDto.Request.ScheduleCreateRequest.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .startTime(request.getStartTime())
@@ -82,18 +83,18 @@ public class ScheduleApiController {
                 .source(request.getSource())
                 .build();
 
-        ScheduleDTO.Response.ScheduleResponse saved = scheduleService.createSchedule(userDetail.getTUserUid(), scheduleRequest);
+        ScheduleDto.Response.ScheduleResponse saved = scheduleService.createSchedule(userDetail.getTUserUid(), scheduleRequest);
         return ResponseEntity.ok(saved);
     }
 
     @PostMapping("/nlp/save-batch")
-    public ResponseEntity<List<ScheduleDTO.Response.ScheduleResponse>> saveBatchSchedules(
-            @RequestBody @Valid List<ScheduleDTO.Request.ModifyExtractedScheduleRequest> requests,
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> saveBatchSchedules(
+            @RequestBody @Valid List<ScheduleDto.Request.ModifyExtractedScheduleRequest> requests,
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDTO.Response.ScheduleResponse> saved = requests.stream()
+        List<ScheduleDto.Response.ScheduleResponse> saved = requests.stream()
                 .map(request -> {
-                    ScheduleDTO.Request.ScheduleCreateRequest scheduleRequest = ScheduleDTO.Request.ScheduleCreateRequest.builder()
+                    ScheduleDto.Request.ScheduleCreateRequest scheduleRequest = ScheduleDto.Request.ScheduleCreateRequest.builder()
                             .title(request.getTitle())
                             .content(request.getContent())
                             .startTime(request.getStartTime())

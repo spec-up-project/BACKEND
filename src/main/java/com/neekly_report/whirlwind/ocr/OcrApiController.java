@@ -1,6 +1,7 @@
 package com.neekly_report.whirlwind.ocr;
 
-import com.neekly_report.whirlwind.user.UserDTO;
+import com.neekly_report.whirlwind.dto.OcrDto;
+import com.neekly_report.whirlwind.dto.UserDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,11 @@ public class OcrApiController {
 
     @Operation(summary = "이미지 업로드 → 텍스트 요약 및 일정/할일 자동 등록")
     @PostMapping("/upload")
-    public ResponseEntity<OcrDTO.Response.OcrResultResponse> uploadImage(
+    public ResponseEntity<OcrDto.Response.OcrResultResponse> uploadImage(
             @RequestParam("image") MultipartFile image,
-            @AuthenticationPrincipal UserDTO.UserDetail userDetail) {
+            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        OcrDTO.Response.OcrResultResponse result =
+        OcrDto.Response.OcrResultResponse result =
                 ocrService.processImage(image, userDetail.getTUserUid());
 
         return ResponseEntity.ok(result);

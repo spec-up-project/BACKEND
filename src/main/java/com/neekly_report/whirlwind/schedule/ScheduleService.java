@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.schedule;
 
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.entity.User;
 import com.neekly_report.whirlwind.user.UserRepository;
@@ -19,7 +20,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
 
-    public ScheduleDTO.Response.ScheduleResponse createSchedule(String tUserUid, ScheduleDTO.Request.ScheduleCreateRequest dto) {
+    public ScheduleDto.Response.ScheduleResponse createSchedule(String tUserUid, ScheduleDto.Request.ScheduleCreateRequest dto) {
         User user = userRepository.findById(tUserUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
@@ -47,7 +48,7 @@ public class ScheduleService {
 
         Schedule saved = scheduleRepository.save(schedule);
 
-        return ScheduleDTO.Response.ScheduleResponse.builder()
+        return ScheduleDto.Response.ScheduleResponse.builder()
                 .tScheduleUid(saved.getTScheduleUid())
                 .title(saved.getTitle())
                 .content(saved.getContent())
@@ -60,10 +61,10 @@ public class ScheduleService {
                 .build();
     }
 
-    public List<ScheduleDTO.Response.ScheduleResponse> getUserSchedules(String tUserUid) {
+    public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String tUserUid) {
         return scheduleRepository.findByUser_tUserUid(tUserUid)
                 .stream()
-                .map(s -> ScheduleDTO.Response.ScheduleResponse.builder()
+                .map(s -> ScheduleDto.Response.ScheduleResponse.builder()
                         .tScheduleUid(s.getTScheduleUid())
                         .title(s.getTitle())
                         .content(s.getContent())

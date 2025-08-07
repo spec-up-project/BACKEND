@@ -1,4 +1,4 @@
-package com.neekly_report.whirlwind.common.Jwt;
+package com.neekly_report.whirlwind.common.jwt;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

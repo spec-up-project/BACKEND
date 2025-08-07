@@ -1,14 +1,13 @@
-package com.neekly_report.whirlwind.common;
+package com.neekly_report.whirlwind.dto;
 
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class CommonDTO {
+public class CommonDto {
     private LocalDateTime createDate;
     private LocalDateTime modifyDate;
 }

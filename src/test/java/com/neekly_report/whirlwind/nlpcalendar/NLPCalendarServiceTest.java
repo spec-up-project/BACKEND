@@ -1,7 +1,7 @@
 package com.neekly_report.whirlwind.nlpcalendar;
 
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.schedule.NLPCalendarService;
-import com.neekly_report.whirlwind.schedule.ScheduleDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +27,13 @@ class NLPCalendarServiceTest {
         String text = "내일 오후 2시에 팀 미팅";
         
         // when
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = 
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules =
                 nlpCalendarService.extractSchedulesFromText(text, "TEXT");
         
         // then
         assertEquals(1, schedules.size());
         
-        ScheduleDTO.Request.ScheduleCreateRequest schedule = schedules.get(0);
+        ScheduleDto.Request.ScheduleCreateRequest schedule = schedules.get(0);
         assertEquals("팀 미팅", schedule.getTitle());
         assertEquals("자동 생성된 일정: 팀 미팅", schedule.getContent());
         assertEquals(text, schedule.getRawText());
@@ -54,14 +54,14 @@ class NLPCalendarServiceTest {
         String text = "내일 오후 2시에 팀 미팅\n8월 10일 오전 10시 프로젝트 회의 2시간";
         
         // when
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = 
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules =
                 nlpCalendarService.extractSchedulesFromText(text, "TEXT");
         
         // then
         assertEquals(2, schedules.size());
         
         // 첫 번째 일정 확인
-        ScheduleDTO.Request.ScheduleCreateRequest schedule1 = schedules.get(0);
+        ScheduleDto.Request.ScheduleCreateRequest schedule1 = schedules.get(0);
         assertEquals("팀 미팅", schedule1.getTitle());
         
         LocalDate tomorrow = LocalDate.now().plusDays(1);
@@ -72,7 +72,7 @@ class NLPCalendarServiceTest {
         assertEquals(expectedEndTime1, schedule1.getEndTime());
         
         // 두 번째 일정 확인
-        ScheduleDTO.Request.ScheduleCreateRequest schedule2 = schedules.get(1);
+        ScheduleDto.Request.ScheduleCreateRequest schedule2 = schedules.get(1);
         assertEquals("프로젝트 회의", schedule2.getTitle());
         
         LocalDate august10 = LocalDate.of(LocalDate.now().getYear(), 8, 10);
@@ -96,7 +96,7 @@ class NLPCalendarServiceTest {
                       "모레 아침 회의";
         
         // when
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = 
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules =
                 nlpCalendarService.extractSchedulesFromText(text, "TEXT");
         
         // then
@@ -122,7 +122,7 @@ class NLPCalendarServiceTest {
                       "오늘 오전 10시 워크샵";
         
         // when
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = 
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules =
                 nlpCalendarService.extractSchedulesFromText(text, "TEXT");
         
         // then
@@ -144,7 +144,7 @@ class NLPCalendarServiceTest {
                       "오늘 16:00 2시간 30분 워크샵";
         
         // when
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = 
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules =
                 nlpCalendarService.extractSchedulesFromText(text, "TEXT");
         
         // then
