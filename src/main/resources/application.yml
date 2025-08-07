@@ -17,3 +17,11 @@ spring:
       hibernate:
         format_sql: true      # 쿼리 로그 포맷 (정렬)
         show_sql: true        # 쿼리 로그 출력
+
+# 로깅 설정
+logging:
+  level:
+    com.neekly_report.whirlwind: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

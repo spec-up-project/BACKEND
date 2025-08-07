@@ -1,6 +1,5 @@
-package com.neekly_report.whirlwind.user;
+package com.neekly_report.whirlwind.dto;
 
-import com.neekly_report.whirlwind.common.CommonDTO;
 import com.neekly_report.whirlwind.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,9 +13,9 @@ import java.util.Collections;
 
 
 @Builder
-public class UserDTO {
+public class UserDto {
     @Getter
-    public static class UserDetail extends CommonDTO implements UserDetails {
+    public static class UserDetail extends CommonDto implements UserDetails {
         private final User user;
 
         public UserDetail(User user) {

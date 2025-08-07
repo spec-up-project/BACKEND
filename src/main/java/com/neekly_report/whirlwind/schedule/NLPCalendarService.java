@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.schedule;
 
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,14 +32,14 @@ public class NLPCalendarService {
     );
 
     /**
-     * 자연어 텍스트에서 일정 정보를 추출하여 ScheduleDTO 리스트로 반환
+     * 자연어 텍스트에서 일정 정보를 추출하여 ScheduleDto 리스트로 반환
      * 
      * @param text 자연어 텍스트
      * @param source 입력 소스 (TEXT, FILE 등)
      * @return 추출된 일정 정보 리스트
      */
-    public List<ScheduleDTO.Request.ScheduleCreateRequest> extractSchedulesFromText(String text, String source) {
-        List<ScheduleDTO.Request.ScheduleCreateRequest> schedules = new ArrayList<>();
+    public List<ScheduleDto.Request.ScheduleCreateRequest> extractSchedulesFromText(String text, String source) {
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules = new ArrayList<>();
         
         // 텍스트를 줄 단위로 분리하여 각 줄에서 일정 정보 추출
         String[] lines = text.split("\\r?\\n");
@@ -46,7 +47,7 @@ public class NLPCalendarService {
             if (line.trim().isEmpty()) continue;
             
             try {
-                ScheduleDTO.Request.ScheduleCreateRequest schedule = extractScheduleFromLine(line);
+                ScheduleDto.Request.ScheduleCreateRequest schedule = extractScheduleFromLine(line);
                 if (schedule != null) {
                     schedule.setRawText(line);
                     schedule.setSource(source);
@@ -67,7 +68,7 @@ public class NLPCalendarService {
      * @param line 텍스트 한 줄
      * @return 추출된 일정 정보
      */
-    private ScheduleDTO.Request.ScheduleCreateRequest extractScheduleFromLine(String line) {
+    private ScheduleDto.Request.ScheduleCreateRequest extractScheduleFromLine(String line) {
         // Duckling을 사용하여 날짜/시간 정보 추출
         List<DucklingService.DateTimeInfo> dateTimeInfos = ducklingService.extractDateTime(line, "ko");
         
@@ -93,11 +94,11 @@ public class NLPCalendarService {
      * @param end 종료 시간
      * @return 일정 DTO
      */
-    private ScheduleDTO.Request.ScheduleCreateRequest createSchedule(String text, LocalDateTime start, LocalDateTime end) {
+    private ScheduleDto.Request.ScheduleCreateRequest createSchedule(String text, LocalDateTime start, LocalDateTime end) {
         // 제목 추출 (날짜/시간 관련 텍스트 제거)
         String title = extractTitle(text);
         
-        return ScheduleDTO.Request.ScheduleCreateRequest.builder()
+        return ScheduleDto.Request.ScheduleCreateRequest.builder()
                 .title(title)
                 .content("자동 생성된 일정: " + title)
                 .startTime(start)

@@ -35,7 +35,7 @@ public class DucklingService {
     private final ObjectMapper objectMapper;
     
     // Duckling 서버 URL (로컬 또는 원격 서버)
-    private static final String DUCKLING_URL = "http://neekly-report.cloud:8000/parse";
+    private static final String DUCKLING_URL = "http://146.56.98.230:8000/parse";
     
     /**
      * 텍스트에서 날짜/시간 정보 추출

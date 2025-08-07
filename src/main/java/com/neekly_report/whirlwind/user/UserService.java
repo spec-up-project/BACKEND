@@ -1,8 +1,9 @@
 package com.neekly_report.whirlwind.user;
 
-import com.neekly_report.whirlwind.common.Jwt.JwtUtil;
-import com.neekly_report.whirlwind.common.Jwt.RefreshToken;
-import com.neekly_report.whirlwind.common.Jwt.RefreshTokenRepository;
+import com.neekly_report.whirlwind.common.jwt.JwtUtil;
+import com.neekly_report.whirlwind.common.jwt.RefreshToken;
+import com.neekly_report.whirlwind.common.jwt.RefreshTokenRepository;
+import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.entity.User;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class UserService implements UserServiceImp, UserDetailsService {
     }
 
     @Override
-    public UserDTO.Response.UserRegisterResponse register(UserDTO.Request.UserRegisterRequest dto) {
+    public UserDto.Response.UserRegisterResponse register(UserDto.Request.UserRegisterRequest dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("이미 사용 중인 이메일입니다.");
         }
@@ -45,7 +46,7 @@ public class UserService implements UserServiceImp, UserDetailsService {
                 .build();
         User responseUser = userRepository.save(user);
 
-        return UserDTO.Response.UserRegisterResponse.builder()
+        return UserDto.Response.UserRegisterResponse.builder()
                 .tUserUid(responseUser.getTUserUid())
                 .userName(responseUser.getUserName())
                 .email(responseUser.getEmail())
@@ -58,7 +59,7 @@ public class UserService implements UserServiceImp, UserDetailsService {
     }
 
     @Override
-    public UserDTO.Response.LoginResponse login(UserDTO.Request.LoginRequest request) {
+    public UserDto.Response.LoginResponse login(UserDto.Request.LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -76,7 +77,7 @@ public class UserService implements UserServiceImp, UserDetailsService {
                         .build()
         );
 
-        return new UserDTO.Response.LoginResponse(accessToken, refreshToken, user.getUserName(), user.getEmail());
+        return new UserDto.Response.LoginResponse(accessToken, refreshToken, user.getUserName(), user.getEmail());
     }
 
     public String reissueToken(String refreshToken) {
@@ -98,6 +99,6 @@ public class UserService implements UserServiceImp, UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 이메일의 사용자를 찾을 수 없습니다."));
-        return new UserDTO.UserDetail(user);
+        return new UserDto.UserDetail(user);
     }
 }

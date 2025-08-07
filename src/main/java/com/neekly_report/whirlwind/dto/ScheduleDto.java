@@ -1,4 +1,4 @@
-package com.neekly_report.whirlwind.schedule;
+package com.neekly_report.whirlwind.dto;
 
 import com.neekly_report.whirlwind.entity.User;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Builder
-public class ScheduleDTO {
+public class ScheduleDto {
 
     public static class Request {
 

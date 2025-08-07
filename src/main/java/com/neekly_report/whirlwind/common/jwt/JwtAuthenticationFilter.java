@@ -1,6 +1,6 @@
-package com.neekly_report.whirlwind.common.Jwt;
+package com.neekly_report.whirlwind.common.jwt;
 
-import com.neekly_report.whirlwind.user.UserDTO;
+import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.user.UserService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String email = claims.get("email", String.class);
 
             // ⭐ UserDetail 객체 가져오기
-            UserDTO.UserDetail userDetail = (UserDTO.UserDetail) userService.loadUserByUsername(email);
+            UserDto.UserDetail userDetail = (UserDto.UserDetail) userService.loadUserByUsername(email);
 
             // ⭐ 인증 객체 생성
             UsernamePasswordAuthenticationToken authentication =
