@@ -8,10 +8,10 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "T_EVENT")
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "T_EVENT")
 public class Event extends Common {
 
     @Id

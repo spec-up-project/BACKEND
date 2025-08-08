@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "T_WEEKLY_REPORT")
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "T_WEEKLY_REPORT")
 public class WeeklyReport extends Common {
 
     @Id

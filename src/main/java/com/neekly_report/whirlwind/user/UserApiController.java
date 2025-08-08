@@ -47,4 +47,8 @@ public class UserApiController {
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 
+    public ResponseEntity<?> subjectInsert() {
+        return ResponseEntity.ok("");
+    }
+
 }
