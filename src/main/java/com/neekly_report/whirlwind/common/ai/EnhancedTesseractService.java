@@ -28,6 +28,9 @@ public class EnhancedTesseractService {
     public String extractText(MultipartFile imageFile, String language) throws TesseractException, IOException {
         ITesseract tesseract = createTesseractInstance(language);
 
+        tesseract.setDatapath(tessDataPath); // OS에 따라 경로 조정
+        tesseract.setLanguage("kor");
+
         // MultipartFile을 임시 파일로 변환
         File tempFile = convertMultipartFileToFile(imageFile);
 

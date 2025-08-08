@@ -2,10 +2,14 @@ package com.neekly_report.whirlwind.common.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neekly_report.whirlwind.dto.OllamaDto.OllamaRequest;
+import com.neekly_report.whirlwind.dto.OllamaDto.OllamaResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -19,17 +23,44 @@ public class OllamaService {
 
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
 
-    @Value("${app.ollama.url:http://localhost:11434}")
+    @Value("${app.ollama.url}")
     private String ollamaUrl;
 
-    @Value("${app.ollama.model:phi3}")
+    @Value("${app.ollama.model}")
     private String model;
+
+    public String getOllamaResponse(String prompt) {
+        // 요청 객체 생성
+        OllamaRequest request = new OllamaRequest();
+        request.setModel("gemma3n:e4b");
+        request.setPrompt(prompt);
+        request.setStream(false);
+
+        // HTTP 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // HTTP 엔티티 생성
+        HttpEntity<OllamaRequest> entity = new HttpEntity<>(request, headers);
+
+        // POST 요청
+        ResponseEntity<OllamaResponse> response = restTemplate.exchange(
+                ollamaUrl,
+                HttpMethod.POST,
+                entity,
+                OllamaResponse.class
+        );
+
+        // 응답 반환
+        return response.getBody().getResponse();
+    }
 
     public String generateResponse(String prompt) {
         try {
             String response = webClient.post()
-                    .uri(ollamaUrl + "/api/generate")
+                    .uri(ollamaUrl)
                     .body(Mono.just(Map.of(
                             "model", model,
                             "prompt", prompt,
