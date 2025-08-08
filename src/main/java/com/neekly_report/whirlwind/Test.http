@@ -1,0 +1,25 @@
+### Token 발급
+POST http://localhost:8081/api/user/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "email@email.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("authorizationToken", response.body.grantType + " " + response.body.accessToken);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.log("JWT TOKEN ==> " + client.global.get("authorizationToken"));
+%}
+
+### 텍스트에서 일정/할일 추출
+POST http://localhost:8081/api/extract/text
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+
+{
+  "text": "TEXT",
+  "sourceType": ""
+}
