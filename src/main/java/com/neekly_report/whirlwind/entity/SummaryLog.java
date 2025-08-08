@@ -6,10 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "T_SUMMARY_LOG")
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(name = "T_SUMMARY_LOG")
 public class SummaryLog extends Common {
 
     @Id

@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "T_TODO")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "T_TODO")
 public class Todo extends Common {
 
     @Id
@@ -58,3 +58,4 @@ public class Todo extends Common {
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
 }
+
