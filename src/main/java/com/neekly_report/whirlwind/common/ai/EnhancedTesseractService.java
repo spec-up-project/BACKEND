@@ -19,14 +19,17 @@ import java.io.IOException;
 @Slf4j
 public class EnhancedTesseractService {
 
-    @Value("${app.tesseract.data-path:/usr/share/tesseract-ocr/5/tessdata}")
+    @Value("${app.tesseract.data-path}")
     private String tessDataPath;
 
-    @Value("${app.tesseract.timeout:30}")
+    @Value("${app.tesseract.timeout}")
     private int timeoutSeconds;
 
     public String extractText(MultipartFile imageFile, String language) throws TesseractException, IOException {
         ITesseract tesseract = createTesseractInstance(language);
+
+        tesseract.setDatapath(tessDataPath); // OS에 따라 경로 조정
+        tesseract.setLanguage("kor");
 
         // MultipartFile을 임시 파일로 변환
         File tempFile = convertMultipartFileToFile(imageFile);

@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.extraction;
 
+import com.neekly_report.whirlwind.common.ai.OllamaService;
 import com.neekly_report.whirlwind.dto.ApiResponseDto;
 import com.neekly_report.whirlwind.dto.ExtractionDto;
 import com.neekly_report.whirlwind.dto.UserDto;
@@ -21,6 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ExtractionApiController {
 
     private final ExtractionService extractionService;
+    private final OllamaService ollamaService;
+
+    @PostMapping("/ask")
+    public String askOllama(@RequestBody String prompt) {
+        return ollamaService.getOllamaResponse(prompt);
+    }
 
     @Operation(summary = "텍스트에서 일정/할일 추출",
             description = "자연어 텍스트에서 Duckling + LLM을 이용해 일정과 할일을 추출합니다")

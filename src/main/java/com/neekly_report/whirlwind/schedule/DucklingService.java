@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -35,7 +38,8 @@ public class DucklingService {
     private final ObjectMapper objectMapper;
     
     // Duckling 서버 URL (로컬 또는 원격 서버)
-    private static final String DUCKLING_URL = "http://146.56.98.230:8000/parse";
+    @Value("${app.duckling.url}")
+    private String DUCKLING_URL;
     
     /**
      * 텍스트에서 날짜/시간 정보 추출
@@ -45,65 +49,50 @@ public class DucklingService {
      * @return 추출된 날짜/시간 정보 목록
      */
     public List<DateTimeInfo> extractDateTime(String text, String locale) {
+        List<DateTimeInfo> results = new ArrayList<>();
         try {
-            // Duckling API 요청 준비
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("text", text);
-            requestBody.put("locale", locale);
-            requestBody.put("dims", List.of("time"));
-            log.debug("Duckling 요청 JSON: {}", objectMapper.writeValueAsString(requestBody));
+            MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
+            requestBody.add("text", text);
+            requestBody.add("locale", locale);
+            requestBody.add("dims", "[\"time\"]");
 
-            HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-            
-            // Duckling API 호출
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
+
             ResponseEntity<String> response = restTemplate.postForEntity(DUCKLING_URL, request, String.class);
-            
-            // 응답 파싱
             JsonNode root = objectMapper.readTree(response.getBody());
-            List<DateTimeInfo> results = new ArrayList<>();
 
             for (JsonNode node : root) {
                 if (node.has("dim") && "time".equals(node.get("dim").asText())) {
                     JsonNode value = node.get("value");
-                    
                     if (value.has("type")) {
                         String type = value.get("type").asText();
-                        
                         if ("value".equals(type) && value.has("value")) {
-                            // 단일 시간값 처리
                             String dateTimeStr = value.get("value").asText();
                             LocalDateTime dateTime = parseDateTime(dateTimeStr);
-                            
                             DateTimeInfo info = new DateTimeInfo();
                             info.setType("DATETIME");
                             info.setStart(dateTime);
-                            info.setEnd(dateTime.plusHours(1)); // 기본 1시간 설정
+                            info.setEnd(dateTime.plusHours(1));
                             info.setText(node.get("body").asText());
-                            
                             results.add(info);
                         } else if ("interval".equals(type) && value.has("from") && value.has("to")) {
-                            // 시간 간격 처리
                             String fromStr = value.get("from").get("value").asText();
                             String toStr = value.get("to").get("value").asText();
-                            
                             LocalDateTime from = parseDateTime(fromStr);
                             LocalDateTime to = parseDateTime(toStr);
-                            
                             DateTimeInfo info = new DateTimeInfo();
                             info.setType("INTERVAL");
                             info.setStart(from);
                             info.setEnd(to);
                             info.setText(node.get("body").asText());
-                            
                             results.add(info);
                         }
                     }
                 }
             }
-            
             return results;
         } catch (Exception e) {
             log.error("Duckling API 호출 중 오류 발생: {}", e.getMessage(), e);
