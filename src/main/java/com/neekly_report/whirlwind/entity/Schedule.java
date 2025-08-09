@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "T_SCHEDULE")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "T_SCHEDULE")
 public class Schedule extends Common {
 
     @Id

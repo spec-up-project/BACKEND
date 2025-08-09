@@ -11,10 +11,10 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "T_USER")
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "T_USER")
 public class User extends Common {
 
     @Id
