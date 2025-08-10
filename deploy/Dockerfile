@@ -5,7 +5,7 @@ FROM eclipse-temurin:21-jdk-alpine
 #    apk add --no-cache tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-kor
 
 # JAR 복사
-ARG JAR_FILE=./build/libs/*.jar
+ARG JAR_FILE=../build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
 EXPOSE 8081
