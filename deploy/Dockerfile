@@ -5,8 +5,7 @@ FROM eclipse-temurin:21-jdk-alpine
 #    apk add --no-cache tesseract-ocr tesseract-ocr-data-eng tesseract-ocr-data-kor
 
 # JAR 복사
-ARG JAR_FILE=../build/libs/whirlwind-0.0.1.jar
-COPY ${JAR_FILE} app.jar
+COPY ../build/libs/whirlwind-0.0.1.jar app.jar
 
 EXPOSE 8081
 
