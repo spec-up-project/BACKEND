@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,10 +18,7 @@ import java.io.IOException;
 @Slf4j
 public class EnhancedTesseractService {
 
-    @Value("${app.tesseract.data-path}")
     private String tessDataPath;
-
-    @Value("${app.tesseract.timeout}")
     private int timeoutSeconds;
 
     public String extractText(MultipartFile imageFile, String language) throws TesseractException, IOException {
