@@ -2,5 +2,5 @@ spring:
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://146.56.98.230:3306/neeklyreportdb
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: DB_USERNAME
+    password: DB_PASSWORD
