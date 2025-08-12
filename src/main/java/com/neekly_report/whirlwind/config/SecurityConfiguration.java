@@ -27,6 +27,8 @@ public class SecurityConfiguration {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -35,23 +37,13 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // swagger 허용
-                        .requestMatchers(
-                                "/v2/api-docs",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**",
-                                "/swagger-ui.html/**",
-                                "/swagger-ui/**",
-                                "/swagger/**",
-                                "/webjars/**"
-                        ).permitAll()
-                        // 로그인, 회원가입 허용
-                        .requestMatchers("/api/user/login", "/api/user/register", "/api/user/reissue").permitAll()
-                        // 그 외는 인증 필요
+                        .requestMatchers(SecurityConstants.PERMIT_ALL_PATTERNS).permitAll()
                         .anyRequest().authenticated()
                 )
-                // JWT 필터 추가
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
@@ -60,7 +52,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("*")); // 필요에 따라 도메인 제한
+        config.setAllowedOriginPatterns(Arrays.asList("*")); // 프론트엔드 주소
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowCredentials(true);
