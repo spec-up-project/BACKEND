@@ -17,18 +17,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserServiceImp, UserDetailsService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    @Override
     public UserDto.Response.UserRegisterResponse register(UserDto.Request.UserRegisterRequest dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("이미 사용 중인 이메일입니다.");
@@ -58,7 +56,6 @@ public class UserService implements UserServiceImp, UserDetailsService {
                 .build();
     }
 
-    @Override
     public UserDto.Response.LoginResponse login(UserDto.Request.LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));

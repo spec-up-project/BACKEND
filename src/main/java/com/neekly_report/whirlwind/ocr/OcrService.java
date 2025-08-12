@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class OcrService implements OcrServiceImpl {
+public class OcrService {
 
     private final ScheduleService scheduleService;
     private final TodoService todoService;
