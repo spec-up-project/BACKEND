@@ -5,6 +5,8 @@ import com.neekly_report.whirlwind.common.jwt.RefreshToken;
 import com.neekly_report.whirlwind.common.jwt.RefreshTokenRepository;
 import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.entity.User;
+import com.neekly_report.whirlwind.exception.EmailAlreadyUsedException;
+import com.neekly_report.whirlwind.exception.UsernameAlreadyUsedException;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,10 +31,10 @@ public class UserService implements UserDetailsService {
 
     public UserDto.Response.UserRegisterResponse register(UserDto.Request.UserRegisterRequest dto) {
         if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("이미 사용 중인 이메일입니다.");
+            throw new EmailAlreadyUsedException("이미 사용 중인 이메일입니다.");
         }
         if (userRepository.existsByUserName(dto.getUserName())) {
-            throw new RuntimeException("이미 사용 중인 사용자 이름입니다.");
+            throw new UsernameAlreadyUsedException("이미 사용 중인 사용자 이름입니다.");
         }
 
         User user = User.builder()
