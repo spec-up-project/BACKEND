@@ -2,6 +2,7 @@ package com.neekly_report.whirlwind.repository;
 
 import com.neekly_report.whirlwind.entity.Schedule;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -27,4 +28,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, String> {
 
     @Query("SELECT COUNT(s) FROM Schedule s WHERE s.user.tUserUid = :tUserUid AND s.startTime BETWEEN :startTime AND :endTime")
     long countByUserAndTimeBetween(@Param("tUserUid") String tUserUid, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
+
+    @Modifying
+    @Query("DELETE FROM Schedule WHERE user.tUserUid = :userTUserUid AND tScheduleUid = :tScheduleUid")
+    void deleteByTScheduleUidAndUser_tUserUid(String tScheduleUid, String userTUserUid);
 }

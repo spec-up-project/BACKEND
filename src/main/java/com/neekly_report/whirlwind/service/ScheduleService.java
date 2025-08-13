@@ -7,6 +7,7 @@ import com.neekly_report.whirlwind.repository.ScheduleRepository;
 import com.neekly_report.whirlwind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,6 +80,22 @@ public class ScheduleService {
                 .collect(Collectors.toList());
     }
 
+    public ScheduleDto.Response.ScheduleResponse getUserSchedulesDetail(String tUserUid, String tScheduleUid) {
+        Schedule schedule = scheduleRepository.findByTScheduleUidAndUser_tUserUid(tUserUid, tScheduleUid);
+        return ScheduleDto.Response.ScheduleResponse.builder()
+                .tScheduleUid(schedule.getTScheduleUid())
+                .title(schedule.getTitle())
+                .content(schedule.getContent())
+                .startTime(schedule.getStartTime())
+                .endTime(schedule.getEndTime())
+                .rawText(schedule.getRawText())
+                .source(schedule.getSource())
+                .createDate(schedule.getCreateDate())
+                .modifyDate(schedule.getModifyDate())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
     public ScheduleDto.Response.ScheduleResponse insertSchedules(String tUserUid, ScheduleDto.Request.ScheduleCreateRequest request) {
         User user = userRepository.findById(tUserUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
@@ -105,10 +122,23 @@ public class ScheduleService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public ScheduleDto.Response.ScheduleResponse updateSchedules(String tUserUid, ScheduleDto.Request.ScheduleUpdateRequest request) {
-        Schedule schedule = scheduleRepository.findByTScheduleUidAndUser_tUserUid(tUserUid, request.getTScheduleUid());
+        User user = userRepository.findById(tUserUid)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
-        Schedule result = scheduleRepository.save(schedule);
+        Schedule result = scheduleRepository.save(
+                Schedule.builder()
+                .tScheduleUid(request.getTScheduleUid())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .rawText(request.getRawText())
+                .source(request.getSource())
+                .user(user)
+                .build()
+        );
 
         return ScheduleDto.Response.ScheduleResponse.builder()
                 .tScheduleUid(result.getTScheduleUid())
@@ -123,9 +153,10 @@ public class ScheduleService {
                 .build();
     }
 
-    public String deleteSchedules(String tUserUid) {
+    @Transactional
+    public String deleteSchedules(String tScheduleUid, String tUserUid) {
         try {
-            scheduleRepository.deleteById(tUserUid);
+            scheduleRepository.deleteByTScheduleUidAndUser_tUserUid(tScheduleUid, tUserUid);
             return tUserUid;
         } catch (Exception e) {
             return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + tUserUid;
