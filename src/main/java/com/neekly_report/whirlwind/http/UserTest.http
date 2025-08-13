@@ -48,7 +48,7 @@ Content-Type: application/json
 
 {
   "title": "테스트",
-  "content": "테스트 실행",
+  "content": "테스트",
   "startTime": "",
   "endTime": "",
   "rawText": "",
@@ -62,8 +62,8 @@ Authorization: {{authorizationToken}}
 Content-Type: application/json
 
 {
-  "tScheduleUid": "f7e55846-707b-4f15-a9f8-2c51e7d853b5",
-  "title": "테스트",
+  "tScheduleUid": "39a705c7-7ea6-4e44-9d0b-bbfa6d7d5f92",
+  "title": "테스트 제목 수정",
   "content": "테스트 실행 수정",
   "startTime": "2025-08-25T14:51:19.2181692",
   "endTime": "",
@@ -71,3 +71,8 @@ Content-Type: application/json
   "source": "",
   "user": {}
 }
+
+### 캘린더 수동 일정 삭제
+DELETE http://localhost:8081/api/schedule/delete/791b1937-e254-4b03-84ea-6006686637bd
+Authorization: {{authorizationToken}}
+Content-Type: application/json
