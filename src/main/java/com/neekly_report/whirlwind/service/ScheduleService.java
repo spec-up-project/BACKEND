@@ -106,7 +106,7 @@ public class ScheduleService {
     }
 
     public ScheduleDto.Response.ScheduleResponse updateSchedules(String tUserUid, ScheduleDto.Request.ScheduleUpdateRequest request) {
-        Schedule schedule = scheduleRepository.findBytScheduleUidAndUser_TUserUid(request.getTScheduleUid(), tUserUid);
+        Schedule schedule = scheduleRepository.findByTScheduleUidAndUser_tUserUid(tUserUid, request.getTScheduleUid());
 
         Schedule result = scheduleRepository.save(schedule);
 
