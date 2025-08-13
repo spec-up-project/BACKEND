@@ -1,8 +1,7 @@
 package com.neekly_report.whirlwind.config;
 
-import com.neekly_report.whirlwind.common.jwt.JwtAuthenticationFilter;
-import com.neekly_report.whirlwind.common.jwt.JwtUtil;
-import com.neekly_report.whirlwind.user.UserService;
+import com.neekly_report.whirlwind.service.JwtUtil;
+import com.neekly_report.whirlwind.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
