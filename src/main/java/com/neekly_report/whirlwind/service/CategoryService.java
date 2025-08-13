@@ -18,27 +18,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
 
-    public CategoryDto.Response.CategoryResponse createCategory(String tUserUid, CategoryDto.Request.CategoryCreateRequest dto) {
-        User user = userRepository.findById(tUserUid)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-
-        Category category = Category.builder()
-                .categoryName(dto.getCategoryName())
-                .segType(dto.getSegType())
-                .user(user)
-                .build();
-
-        Category saved = categoryRepository.save(category);
-
-        return CategoryDto.Response.CategoryResponse.builder()
-                .tCategoryUid(saved.getTCategoryUid())
-                .categoryName(saved.getCategoryName())
-                .segType(saved.getSegType())
-                .createDate(saved.getCreateDate())
-                .modifyDate(saved.getModifyDate())
-                .build();
-    }
-
     public List<CategoryDto.Response.CategoryResponse> getUserCategories(String tUserUid) {
         return categoryRepository.findByUser_tUserUid(tUserUid)
                 .stream()
@@ -63,6 +42,27 @@ public class CategoryService {
                         .modifyDate(c.getModifyDate())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public CategoryDto.Response.CategoryResponse createCategory(String tUserUid, CategoryDto.Request.CategoryCreateRequest dto) {
+        User user = userRepository.findById(tUserUid)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        Category category = Category.builder()
+                .categoryName(dto.getCategoryName())
+                .segType(dto.getSegType())
+                .user(user)
+                .build();
+
+        Category saved = categoryRepository.save(category);
+
+        return CategoryDto.Response.CategoryResponse.builder()
+                .tCategoryUid(saved.getTCategoryUid())
+                .categoryName(saved.getCategoryName())
+                .segType(saved.getSegType())
+                .createDate(saved.getCreateDate())
+                .modifyDate(saved.getModifyDate())
+                .build();
     }
 
     public CategoryDto.Response.CategoryResponse updateCategory(String tUserUid, CategoryDto.Request.CategoryUpdateRequest dto) {

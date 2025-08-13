@@ -19,7 +19,6 @@ public class CategoryDto {
             @NotBlank(message = "Category name is required")
             private String categoryName;
 
-            @NotBlank(message = "Segment type is required")
             private String segType;
         }
 
@@ -29,13 +28,11 @@ public class CategoryDto {
         @AllArgsConstructor
         @Builder
         public static class CategoryUpdateRequest {
-            @NotBlank(message = "Category UID is required")
             private String tCategoryUid;
 
             @NotBlank(message = "Category name is required")
             private String categoryName;
 
-            @NotBlank(message = "Segment type is required")
             private String segType;
         }
     }
