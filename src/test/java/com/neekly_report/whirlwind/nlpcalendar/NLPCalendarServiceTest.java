@@ -1,7 +1,7 @@
 package com.neekly_report.whirlwind.nlpcalendar;
 
 import com.neekly_report.whirlwind.dto.ScheduleDto;
-import com.neekly_report.whirlwind.schedule.NLPCalendarService;
+import com.neekly_report.whirlwind.service.NLPCalendarService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
