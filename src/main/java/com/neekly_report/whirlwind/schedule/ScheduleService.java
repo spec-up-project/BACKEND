@@ -77,4 +77,57 @@ public class ScheduleService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public ScheduleDto.Response.ScheduleResponse insertSchedules(String tUserUid, ScheduleDto.Request.ScheduleCreateRequest request) {
+        User user = userRepository.findById(tUserUid)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+        Schedule schedule = Schedule.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .startTime(request.getStartTime())
+                .endTime(request.getEndTime())
+                .rawText(request.getRawText())
+                .source(request.getSource())
+                .user(user)
+                .build();
+        Schedule result = scheduleRepository.save(schedule);
+        return ScheduleDto.Response.ScheduleResponse.builder()
+                .tScheduleUid(result.getTScheduleUid())
+                .title(result.getTitle())
+                .content(result.getContent())
+                .startTime(result.getStartTime())
+                .endTime(result.getEndTime())
+                .rawText(result.getRawText())
+                .source(result.getSource())
+                .createDate(result.getCreateDate())
+                .modifyDate(result.getModifyDate())
+                .build();
+    }
+
+    public ScheduleDto.Response.ScheduleResponse updateSchedules(String tUserUid, ScheduleDto.Request.ScheduleUpdateRequest request) {
+        Schedule schedule = scheduleRepository.findBytScheduleUidAndUser_TUserUid(request.getTScheduleUid(), tUserUid);
+
+        Schedule result = scheduleRepository.save(schedule);
+
+        return ScheduleDto.Response.ScheduleResponse.builder()
+                .tScheduleUid(result.getTScheduleUid())
+                .title(result.getTitle())
+                .content(result.getContent())
+                .startTime(result.getStartTime())
+                .endTime(result.getEndTime())
+                .rawText(result.getRawText())
+                .source(result.getSource())
+                .createDate(result.getCreateDate())
+                .modifyDate(result.getModifyDate())
+                .build();
+    }
+
+    public String deleteSchedules(String tUserUid) {
+        try {
+            scheduleRepository.deleteById(tUserUid);
+            return tUserUid;
+        } catch (Exception e) {
+            return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + tUserUid;
+        }
+    }
 }
