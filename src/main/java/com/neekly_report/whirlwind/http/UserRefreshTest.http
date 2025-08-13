@@ -1,0 +1,14 @@
+###
+POST http://localhost:8081/api/user/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {% client.global.set("accessToken", response.body.accessToken);%}
+
+### 로그아웃
+POST http://localhost:8081/api/user/logout
+Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer {{accessToken}}

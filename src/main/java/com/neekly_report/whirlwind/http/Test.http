@@ -1,0 +1,58 @@
+###
+POST http://localhost:8081/api/schedule
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "title": "제목",
+  "content": "내용내용222",
+  "startTime": "",
+  "endTime": "",
+  "rawText": "아 근데 혹시 8/10 오후11시도 가능하세요?",
+  "source": "TEXT",
+  "user": {}
+}
+
+###
+GET http://localhost:8081/api/schedule
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+###
+POST http://localhost:8081/api/ocr/upload?
+    image={{$random.alphanumeric(8)}}
+    Content-Type: application/x-www-form-urlencoded
+Authorization: Bearer {{accessToken}}
+
+###
+GET http://localhost:8081/api/calendar
+Authorization: Bearer {{accessToken}}
+
+
+###
+POST http://localhost:8081/api/extract/text
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "text": "8/10 오후11시도 가능하세요?",
+  "sourceType": "TEXT"
+}
+
+### LLM 연결 테스트
+POST http://localhost:8081/api/extract/ask
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+"다음 글을 제목 1줄, 내용 3줄 내로 요약해. 이마트가 전 품목을 5000원 이하로 구성한 새로운 자체 브랜드(PB) '오케이 프라이스'(5K PRICE)를 선보인다. 1~2인 가구를 겨냥한 소용량, 가공식품·생활용품 위주로 제품을 구성했다. 오프라인 유통업계에서 초저가를 내세운 다이소의 약진이 두드러진 가운데 이마트도 비슷한 전략을 차용했다는 분석이 나온다."
+
+
+### 텍스트에서 일정/할일 추출
+POST http://localhost:8081/api/extract/text
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+
+{
+  "text": "TEXT",
+  "sourceType": ""
+}
