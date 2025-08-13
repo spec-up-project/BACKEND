@@ -8,7 +8,7 @@ Content-Type: application/json;charset=UTF-8
 }
 
 > {%
-    client.global.set("authorizationToken", response.body.grantType + " " + response.body.accessToken);
+    client.global.set("authorizationToken", "Bearer " + response.body.accessToken);
     client.global.set("accessToken", response.body.accessToken);
     client.global.set("refreshToken", response.body.refreshToken);
     client.log("JWT TOKEN ==> " + client.global.get("authorizationToken"));
@@ -22,4 +22,42 @@ Authorization: {{authorizationToken}}
 {
   "text": "TEXT",
   "sourceType": ""
+}
+
+### 캘린더 일정 목록
+GET http://localhost:8081/api/schedule
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+
+
+### 캘린더 수동 일정 저장
+POST http://localhost:8081/api/schedule/insert
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+{
+  "title": "테스트",
+  "content": "테스트 실행",
+  "startTime": "",
+  "endTime": "",
+  "rawText": "",
+  "source": "",
+  "user": {}
+}
+
+### 캘린더 수동 일정 수정
+PUT http://localhost:8081/api/schedule/update
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+{
+  "tScheduleUid": "f7e55846-707b-4f15-a9f8-2c51e7d853b5",
+  "title": "테스트",
+  "content": "테스트 실행 수정",
+  "startTime": "2025-08-25T14:51:19.2181692",
+  "endTime": "",
+  "rawText": "",
+  "source": "",
+  "user": {}
 }

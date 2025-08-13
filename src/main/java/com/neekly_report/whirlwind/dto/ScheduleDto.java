@@ -23,6 +23,18 @@ public class ScheduleDto {
         }
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+        public static class ScheduleUpdateRequest {
+            private String tScheduleUid;
+            private String title;
+            private String content;
+            private LocalDateTime startTime;
+            private LocalDateTime endTime;
+            private String rawText;
+            private String source; // "TEXT", "FILE"
+            private User user;
+        }
+
+        @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
         public static class TextBasedScheduleRequest {
             @NotBlank(message = "텍스트는 필수 입력값입니다.")
             private String text;
