@@ -101,14 +101,13 @@ public class OllamaService {
      */
     public String extractStructuredData(String text) {
         String prompt = """
-            다음 텍스트에서 일정(이벤트)과 할일(태스크)을 추출하여 JSON 형태로 반환해주세요.
+            다음 텍스트에서 일정(이벤트)를 추출하여 JSON 형태로 반환해주세요.
             
             규칙:
             1. 날짜와 시간이 명시된 것은 일정(events)로 분류
-            2. 해야 할 일이나 과업은 할일(todos)로 분류
-            3. 우선순위는 텍스트의 긴급성을 고려해 LOW, MEDIUM, HIGH, URGENT 중 하나로 설정
-            4. 날짜/시간 정보가 불명확하면 현재 시점 기준으로 합리적 추정
-            5. 응답은 반드시 valid JSON 형식이어야 함
+            2. 우선순위는 텍스트의 긴급성을 고려해 LOW, MEDIUM, HIGH, URGENT 중 하나로 설정
+            3. 날짜/시간 정보가 불명확하면 현재 시점 기준으로 합리적 추정
+            4. 응답은 반드시 valid JSON 형식이어야 함
             
             형식:
             {

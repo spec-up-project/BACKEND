@@ -1,6 +1,7 @@
 package com.neekly_report.whirlwind.service;
 
 import com.neekly_report.whirlwind.dto.CalendarDto;
+import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -29,7 +31,7 @@ public class CalendarService {
 
         return schedules.stream()
                 .map(this::toCalendarEvent)
-                .sorted((a, b) -> a.getStartTime().compareTo(b.getStartTime()))
+                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
                 .toList();
     }
 

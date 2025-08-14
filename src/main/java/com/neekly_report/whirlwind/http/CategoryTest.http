@@ -1,0 +1,4 @@
+### 사용자별 카테고리 조회
+GET http://localhost:8081/api/category
+Authorization: Bearer {{accessToken}}
+

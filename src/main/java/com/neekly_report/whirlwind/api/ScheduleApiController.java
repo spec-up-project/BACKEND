@@ -63,7 +63,7 @@ public class ScheduleApiController {
     }
 
     @Operation(summary = "캘린더 수동 일정 수정")
-    @PutMapping("update")
+    @PostMapping("update")
     public ResponseEntity<ScheduleDto.Response.ScheduleResponse> updateSchedule(
             @RequestBody @Valid ScheduleDto.Request.ScheduleUpdateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {

@@ -6,6 +6,7 @@ import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.entity.User;
 import com.neekly_report.whirlwind.exception.EmailAlreadyUsedException;
 import com.neekly_report.whirlwind.exception.UsernameAlreadyUsedException;
+import com.neekly_report.whirlwind.mapper.UserMapper;
 import com.neekly_report.whirlwind.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public List<User> getAllUsers() {
@@ -37,25 +39,13 @@ public class UserService implements UserDetailsService {
             throw new UsernameAlreadyUsedException("이미 사용 중인 사용자 이름입니다.");
         }
 
-        User user = User.builder()
-                .userName(dto.getUserName())
-                .email(dto.getEmail())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .adminYn("N")
-                .useYn("Y")
-                .build();
-        User responseUser = userRepository.save(user);
+        User user = userMapper.toEntity(dto);
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        user.setAdminYn("N");
+        user.setUseYn("Y");
 
-        return UserDto.Response.UserRegisterResponse.builder()
-                .tUserUid(responseUser.getTUserUid())
-                .userName(responseUser.getUserName())
-                .email(responseUser.getEmail())
-                .password(responseUser.getPassword())
-                .adminYn(responseUser.getAdminYn())
-                .useYn(responseUser.getUseYn())
-                .createDate(responseUser.getCreateDate())
-                .modifyDate(responseUser.getModifyDate())
-                .build();
+        User responseUser = userRepository.save(user);
+        return userMapper.toRegisterResponse(responseUser);
     }
 
     public UserDto.Response.LoginResponse login(UserDto.Request.LoginRequest request) {
@@ -68,7 +58,6 @@ public class UserService implements UserDetailsService {
         String accessToken = jwtUtil.generateToken(user.getTUserUid(), user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getTUserUid(), user.getEmail());
 
-        // RefreshToken 저장(갱신)
         refreshTokenRepository.save(
                 RefreshToken.builder()
                         .tUserUid(user.getTUserUid())
@@ -76,7 +65,7 @@ public class UserService implements UserDetailsService {
                         .build()
         );
 
-        return new UserDto.Response.LoginResponse(accessToken, refreshToken, user.getUserName(), user.getEmail());
+        return userMapper.toLoginResponse(user, accessToken, refreshToken);
     }
 
     public String reissueToken(String refreshToken) {
