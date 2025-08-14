@@ -22,7 +22,7 @@ public class WebClientConfig {
                 .build();
 
         HttpClient httpClient = HttpClient.create(connectionProvider)
-                .responseTimeout(Duration.ofSeconds(30))
+                .responseTimeout(Duration.ofSeconds(90))
                 .keepAlive(true);
 
         return WebClient.builder()

@@ -1,11 +1,15 @@
 package com.neekly_report.whirlwind.service;
 
 import com.neekly_report.whirlwind.dto.CalendarDto;
+import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
 import com.neekly_report.whirlwind.dto.ReportDto;
+import com.neekly_report.whirlwind.dto.ReportDto.Response.WeeklySummary;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,6 +22,8 @@ public class ReportService {
 
     private final CalendarService calendarService;
     private final OllamaService ollamaService;
+
+    private final ExcelReportGenerator excelReportGenerator;
 
     /**
      * 주간 리포트 생성
@@ -163,6 +169,21 @@ public class ReportService {
                 .averageProductivityScore(avgProductivityScore)
                 .build();
     }
+
+    public File generateWeeklyReportExcel(String userId) throws IOException {
+        // 기존 로직에서 이벤트와 요약 데이터 수집
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1)
+                .withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
+
+        List<CalendarEvent> weekEvents = calendarService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
+        WeeklySummary summary = calculateWeeklySummary(weekEvents);
+
+        // 엑셀 생성
+        return excelReportGenerator.generateWeeklyExcel(userId, startOfWeek.toLocalDate(), endOfWeek.toLocalDate(), weekEvents, summary);
+    }
+
 
     private String generateMonthlyInsights(String userId,
                                            List<ReportDto.Response.WeeklySummary> weeklySummaries,

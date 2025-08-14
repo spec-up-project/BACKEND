@@ -1,0 +1,9 @@
+### 주간보고 마크다운 다운로드
+GET http://localhost:8081/api/team-report/weekly/markdown?
+    userId=38f54d40-1b13-4654-b739-dfdf6a708375
+Authorization: Bearer {{accessToken}}
+
+### 주간보고 엑셀 다운로드
+GET http://localhost:8081/api/team-report/weekly/excel?
+    userId=38f54d40-1b13-4654-b739-dfdf6a708375
+Authorization: Bearer {{accessToken}}

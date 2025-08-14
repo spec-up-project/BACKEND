@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neekly_report.whirlwind.dto.CalendarDto;
 import com.neekly_report.whirlwind.dto.ExtractionDto;
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.dto.TodoDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.entity.Todo;
@@ -393,6 +394,37 @@ public class ExtractionService {
                 .rawText(todo.getRawText())
                 .build();
     }
+
+    public List<ScheduleDto.Request.ScheduleCreateRequest> extractSchedulesFromText(String text, String source) {
+        List<ScheduleDto.Request.ScheduleCreateRequest> schedules = new ArrayList<>();
+        String[] lines = text.split("\\r?\\n");
+        for (String line : lines) {
+            if (line.trim().isEmpty()) continue;
+            try {
+                List<DucklingService.DateTimeInfo> dateTimeInfos = ducklingService.extractDateTime(line, "ko");
+                if (!dateTimeInfos.isEmpty()) {
+                    DucklingService.DateTimeInfo info = dateTimeInfos.get(0);
+                    String title = line.replace(info.getText(), "").trim();
+                    if (title.isEmpty()) title = "새 일정";
+
+                    ScheduleDto.Request.ScheduleCreateRequest schedule = ScheduleDto.Request.ScheduleCreateRequest.builder()
+                            .title(title)
+                            .content("자동 생성된 일정: " + title)
+                            .startTime(info.getStart())
+                            .endTime(info.getEnd())
+                            .rawText(line)
+                            .source(source)
+                            .build();
+
+                    schedules.add(schedule);
+                }
+            } catch (Exception e) {
+                log.warn("일정 추출 중 오류 발생: {}", e.getMessage());
+            }
+        }
+        return schedules;
+    }
+
 
     /**
      * 파싱된 추출 데이터 내부 클래스

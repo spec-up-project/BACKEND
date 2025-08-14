@@ -2,7 +2,7 @@ package com.neekly_report.whirlwind.api;
 
 import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.dto.UserDto;
-import com.neekly_report.whirlwind.service.NLPCalendarService;
+import com.neekly_report.whirlwind.service.ExtractionService;
 import com.neekly_report.whirlwind.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class ScheduleApiController {
 
     private final ScheduleService scheduleService;
-    private final NLPCalendarService nlpCalendarService;
+    private final ExtractionService extractionService;
 
     @Operation(summary = "캘린더 자동 일정 Duckling 시간 추출 저장 ")
     @PostMapping
@@ -85,7 +85,9 @@ public class ScheduleApiController {
             @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDto.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
+        List<ScheduleDto.Request.ScheduleCreateRequest> extracted =
+                extractionService.extractSchedulesFromText(request.getText(), "TEXT");
+
         List<ScheduleDto.Response.ScheduleResponse> saved = extracted.stream()
                 .map(schedule -> scheduleService.createSchedule(userDetail.getTUserUid(), schedule))
                 .collect(Collectors.toList());
@@ -97,7 +99,9 @@ public class ScheduleApiController {
     public ResponseEntity<List<ScheduleDto.Response.ExtractedSchedulePreview>> previewExtractedSchedules(
             @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request) {
 
-        List<ScheduleDto.Request.ScheduleCreateRequest> extracted = nlpCalendarService.extractSchedulesFromText(request.getText(), "TEXT");
+        List<ScheduleDto.Request.ScheduleCreateRequest> extracted =
+                extractionService.extractSchedulesFromText(request.getText(), "TEXT");
+
         List<ScheduleDto.Response.ExtractedSchedulePreview> preview = extracted.stream()
                 .map(schedule -> ScheduleDto.Response.ExtractedSchedulePreview.builder()
                         .title(schedule.getTitle())

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neekly_report.whirlwind.dto.OllamaDto.OllamaRequest;
 import com.neekly_report.whirlwind.dto.OllamaDto.OllamaResponse;
+import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,16 +81,18 @@ public class OllamaService {
                     )), Map.class)
                     .retrieve()
                     .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(30))
+                    .timeout(Duration.ofSeconds(90))
                     .block();
 
             if (response != null) {
                 JsonNode jsonNode = objectMapper.readTree(response);
                 return jsonNode.get("response").asText();
             }
+        } catch (ReadTimeoutException e) {
+            log.error("Ollama 응답 타임아웃: {}", e.getMessage());
+            return getFallbackResponse(prompt);
         } catch (Exception e) {
             log.error("Ollama 응답 생성 실패: {}", e.getMessage());
-            // Fallback: 기본 응답 반환
             return getFallbackResponse(prompt);
         }
 
@@ -168,22 +171,15 @@ public class OllamaService {
      */
     public String generateWeeklyReport(String scheduleData, String completionStats) {
         String prompt = """
-            다음 데이터를 바탕으로 주간 리포트를 Markdown 형식으로 생성해주세요.
+            다음 데이터와 포맷을 바탕으로 주간 리포트를 Markdown 형식으로 생성해주세요.
             
             일정 데이터: %s
             완료 통계: %s
             
-            # 주간 리포트 (YYYY-MM-DD ~ YYYY-MM-DD)
-            
-            ## 📅 이번 주 주요 일정
-            
-            ## ✅ 완료된 할일
-            
-            ## 📋 진행중인 할일
-            
-            ## 📊 이번 주 성과
-            
-            ## 💡 다음 주 계획
+                ■ 제목
+                  1. 소제목
+                     1) 분류
+                       (1) 분류 Part : 내용 (기한/완료일)
             
             형식으로 작성해주세요.
             """.formatted(scheduleData, completionStats);

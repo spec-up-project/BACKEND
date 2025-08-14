@@ -3,6 +3,7 @@ package com.neekly_report.whirlwind.service;
 import com.neekly_report.whirlwind.dto.CalendarDto;
 import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
 import com.neekly_report.whirlwind.entity.Schedule;
+import com.neekly_report.whirlwind.mapper.CalendarMapper;
 import com.neekly_report.whirlwind.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.util.List;
 public class CalendarService {
 
     private final ScheduleRepository scheduleRepository;
+    private final CalendarMapper calendarMapper;
 
     /**
      * 사용자의 모든 일정 조회
@@ -30,7 +32,7 @@ public class CalendarService {
         List<Schedule> schedules = scheduleRepository.findByUser_tUserUid(userId);
 
         return schedules.stream()
-                .map(this::toCalendarEvent)
+                .map(calendarMapper::toCalendarEvent)
                 .sorted(Comparator.comparing(CalendarEvent::getStartTime))
                 .toList();
     }
@@ -47,8 +49,8 @@ public class CalendarService {
                 userId, startDate, endDate);
 
         return schedules.stream()
-                .map(this::toCalendarEvent)
-                .sorted((a, b) -> a.getStartTime().compareTo(b.getStartTime()))
+                .map(calendarMapper::toCalendarEvent)
+                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
                 .toList();
     }
 
@@ -62,8 +64,8 @@ public class CalendarService {
                 userId, keyword, keyword);
 
         return schedules.stream()
-                .map(this::toCalendarEvent)
-                .sorted((a, b) -> a.getStartTime().compareTo(b.getStartTime()))
+                .map(calendarMapper::toCalendarEvent)
+                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
                 .toList();
     }
 
@@ -96,21 +98,6 @@ public class CalendarService {
         LocalDateTime weekLater = now.plusDays(7);
 
         return getEventsByDateRange(userId, now, weekLater);
-    }
-
-    private CalendarDto.Response.CalendarEvent toCalendarEvent(Schedule schedule) {
-        return CalendarDto.Response.CalendarEvent.builder()
-                .scheduleId(schedule.getTScheduleUid())
-                .title(schedule.getTitle())
-                .content(schedule.getContent())
-                .startTime(schedule.getStartTime())
-                .endTime(schedule.getEndTime())
-                .isAllDay(isAllDayEvent(schedule.getStartTime(), schedule.getEndTime()))
-                .source(schedule.getSource())
-                .rawText(schedule.getRawText())
-                .createDate(schedule.getCreateDate())
-                .modifyDate(schedule.getModifyDate())
-                .build();
     }
 
     private Boolean isAllDayEvent(LocalDateTime startTime, LocalDateTime endTime) {
