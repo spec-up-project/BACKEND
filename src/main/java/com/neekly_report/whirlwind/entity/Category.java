@@ -29,6 +29,6 @@ public class Category extends Common {
     private String segType;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "T_USER_UID")
     private User user;
 }

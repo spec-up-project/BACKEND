@@ -1,12 +1,10 @@
 package com.neekly_report.whirlwind.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Getter
@@ -16,9 +14,18 @@ import lombok.Setter;
 public class WeeklyReport extends Common {
 
     @Id
-    @Column(name = "REPORT_ID", nullable = false, updatable = false)
-    private String reportId;
+    @UuidGenerator
+    @GeneratedValue(generator = "UUID")
+    @Column(name = "T_REPORT_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
+    private String reportUid;
+
+    @Column(name = "TITLE")
+    private String title;
 
     @Column(name = "CONTENT")
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "T_USER_UID", nullable = false)
+    private User user;
 }

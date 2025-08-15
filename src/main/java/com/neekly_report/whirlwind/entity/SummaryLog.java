@@ -13,14 +13,14 @@ import lombok.Setter;
 public class SummaryLog extends Common {
 
     @Id
-    @Column(name = "LOG_ID", nullable = false, updatable = false)
+    @Column(name = "T_LOG_UID", nullable = false, updatable = false)
     private String logId;
 
     @Column(name = "CONTENT")
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "T_USER_UID")
     private User user;
 }
 

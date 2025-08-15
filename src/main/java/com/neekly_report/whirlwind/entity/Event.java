@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class Event extends Common {
 
     @Id
-    @Column(name = "EVENT_ID", nullable = false, updatable = false)
+    @Column(name = "T_EVENT_UID", nullable = false, updatable = false)
     private String eventId;
 
     @Column(name = "TITLE")
@@ -31,7 +31,7 @@ public class Event extends Common {
     private LocalDateTime endTime;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "T_USER_UID")
     private User user;
 }
 
