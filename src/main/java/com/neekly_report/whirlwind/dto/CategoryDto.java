@@ -29,7 +29,7 @@ public class CategoryDto {
         @AllArgsConstructor
         @Builder
         public static class CategoryUpdateRequest {
-//            @JsonProperty("tCategoryUid")
+            @JsonProperty("tCategoryUid")
             private String tCategoryUid;
 
             @NotBlank(message = "Category name is required")
