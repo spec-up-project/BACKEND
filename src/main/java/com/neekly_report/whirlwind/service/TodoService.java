@@ -32,7 +32,7 @@ public class TodoService {
         Todo saved = todoRepository.save(todo);
 
         return TodoDto.Response.TodoResponse.builder()
-                .tTodoUid(saved.getTTodoUid())
+                .todoUid(saved.getTodoUid())
                 .status(saved.getStatus())
                 .category(saved.getCategory())
                 .priority(saved.getPriority())
@@ -43,7 +43,7 @@ public class TodoService {
         return todoRepository.findByUser_userUid(tUserUid)
                 .stream()
                 .map(t -> TodoDto.Response.TodoResponse.builder()
-                        .tTodoUid(t.getTTodoUid())
+                        .todoUid(t.getTodoUid())
                         .status(t.getStatus())
                         .category(t.getCategory())
                         .priority(t.getPriority())

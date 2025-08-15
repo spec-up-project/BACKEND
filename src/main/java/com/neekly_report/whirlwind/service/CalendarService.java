@@ -29,7 +29,7 @@ public class CalendarService {
     public List<CalendarDto.Response.CalendarEvent> getUserEvents(String userId) {
         log.info("사용자 일정 조회 - 사용자ID: {}", userId);
 
-        List<Schedule> schedules = scheduleRepository.findByUser_tUserUid(userId);
+        List<Schedule> schedules = scheduleRepository.findByUser_userUid(userId);
 
         return schedules.stream()
                 .map(calendarMapper::toCalendarEvent)
@@ -45,7 +45,7 @@ public class CalendarService {
 
         log.info("기간별 일정 조회 - 사용자ID: {}, 기간: {} ~ {}", userId, startDate, endDate);
 
-        List<Schedule> schedules = scheduleRepository.findByUser_tUserUidAndStartTimeBetween(
+        List<Schedule> schedules = scheduleRepository.findByUser_userUidAndStartTimeBetween(
                 userId, startDate, endDate);
 
         return schedules.stream()
@@ -60,7 +60,7 @@ public class CalendarService {
     public List<CalendarDto.Response.CalendarEvent> searchEvents(String userId, String keyword) {
         log.info("일정 검색 - 사용자ID: {}, 키워드: {}", userId, keyword);
 
-        List<Schedule> schedules = scheduleRepository.findByUser_tUserUidAndTitleContainingOrContentContaining(
+        List<Schedule> schedules = scheduleRepository.findByUser_userUidAndTitleContainingOrContentContaining(
                 userId, keyword, keyword);
 
         return schedules.stream()

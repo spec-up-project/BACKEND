@@ -20,7 +20,7 @@ public class Schedule extends Common {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "T_SCHEDULE_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
-    private String tScheduleUid;
+    private String scheduleUid;
 
     @Comment("일정 제목")
     @Column(name = "TITLE", nullable = false)

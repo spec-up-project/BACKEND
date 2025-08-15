@@ -48,14 +48,14 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String tUserUid) {
-        return scheduleRepository.findByUser_tUserUid(tUserUid)
+        return scheduleRepository.findByUser_userUid(tUserUid)
                 .stream()
                 .map(scheduleMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     public ScheduleDto.Response.ScheduleResponse getUserSchedulesDetail(String tUserUid, String tScheduleUid) {
-        Schedule schedule = scheduleRepository.findBytScheduleUidAndUser_tUserUid(tUserUid, tScheduleUid);
+        Schedule schedule = scheduleRepository.findByScheduleUidAndUser_userUid(tUserUid, tScheduleUid);
         return scheduleMapper.toResponse(schedule);
     }
 
@@ -82,7 +82,7 @@ public class ScheduleService {
     @Transactional
     public String deleteSchedules(String tScheduleUid, String tUserUid) {
         try {
-            scheduleRepository.deleteByTScheduleUidAndUser_tUserUid(tScheduleUid, tUserUid);
+            scheduleRepository.deleteByScheduleUidAndUser_userUid(tScheduleUid, tUserUid);
             return tUserUid;
         } catch (Exception e) {
             return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + tUserUid;

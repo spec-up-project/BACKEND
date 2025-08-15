@@ -93,7 +93,7 @@ public class TodoManagementService {
     public TodoDto.Response.TodoItem completeTodo(String userId, String todoId) {
         log.info("할일 완료 처리 - 사용자ID: {}, 할일ID: {}", userId, todoId);
 
-        Todo todo = todoRepository.findBytTodoUidAndUser_userUid(todoId, userId)
+        Todo todo = todoRepository.findByTodoUidAndUser_userUid(todoId, userId)
                 .orElseThrow(() -> new RuntimeException("할일을 찾을 수 없습니다"));
 
         todo.setStatus("COMPLETED");
@@ -108,7 +108,7 @@ public class TodoManagementService {
     public TodoDto.Response.TodoItem updateTodoStatus(String userId, String todoId, String status) {
         log.info("할일 상태 변경 - 사용자ID: {}, 할일ID: {}, 상태: {}", userId, todoId, status);
 
-        Todo todo = todoRepository.findBytTodoUidAndUser_userUid(todoId, userId)
+        Todo todo = todoRepository.findByTodoUidAndUser_userUid(todoId, userId)
                 .orElseThrow(() -> new RuntimeException("할일을 찾을 수 없습니다"));
 
         todo.setStatus(status);
@@ -181,7 +181,7 @@ public class TodoManagementService {
 
     private TodoDto.Response.TodoItem toTodoItem(Todo todo) {
         return TodoDto.Response.TodoItem.builder()
-                .todoId(todo.getTTodoUid())
+                .todoId(todo.getTodoUid())
                 .title(todo.getTitle())
                 .description(todo.getDescription())
                 .dueDate(todo.getDueDate())

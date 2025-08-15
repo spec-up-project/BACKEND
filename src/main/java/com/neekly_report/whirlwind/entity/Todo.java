@@ -20,7 +20,7 @@ public class Todo extends Common {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "T_TODO_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
-    private String tTodoUid;
+    private String todoUid;
 
     @Comment("할일 제목")
     @Column(name = "TITLE", nullable = false)

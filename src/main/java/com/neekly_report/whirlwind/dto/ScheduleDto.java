@@ -3,7 +3,6 @@ package com.neekly_report.whirlwind.dto;
 import com.neekly_report.whirlwind.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -25,8 +24,7 @@ public class ScheduleDto {
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
         public static class ScheduleUpdateRequest {
-            @JsonProperty("tScheduleUid")
-            private String tScheduleUid;
+            private String scheduleUid;
             private String title;
             private String content;
             private LocalDateTime startTime;
@@ -57,7 +55,7 @@ public class ScheduleDto {
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
         public static class ScheduleResponse {
-            private String tScheduleUid;
+            private String scheduleUid;
             private String title;
             private String content;
             private LocalDateTime startTime;

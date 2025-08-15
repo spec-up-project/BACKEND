@@ -363,7 +363,7 @@ public class ExtractionService {
     // DTO 변환 메서드들
     private CalendarDto.Response.CalendarEvent toCalendarEvent(Schedule schedule) {
         return CalendarDto.Response.CalendarEvent.builder()
-                .scheduleId(schedule.getTScheduleUid())
+                .scheduleId(schedule.getScheduleUid())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
                 .startTime(schedule.getStartTime())

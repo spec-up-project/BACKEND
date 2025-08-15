@@ -18,15 +18,9 @@ public interface TodoRepository extends JpaRepository<Todo, String> {
 
     List<Todo> findByUser_userUidAndDueDateBeforeAndStatusNot(String userUid, LocalDateTime dueDate, String status);
 
-    Optional<Todo> findBytTodoUidAndUser_userUid(String tTodoUid, String userUid);
+    Optional<Todo> findByTodoUidAndUser_userUid(String todoUid, String userUid);
 
     List<Todo> findByUser_userUidAndTitleContainingOrDescriptionContaining(String userUid, String title, String description);
 
     List<Todo> findByUser_userUidAndDueDateBetween(String userUid, LocalDateTime startDate, LocalDateTime endDate);
-    
-    List<Todo> findCompletedTodosBetween(@Param("userUid") String userUid, @Param("status") String status, @Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
-
-    long countByUserAndStatus(@Param("userUid") String userUid, @Param("status") String status);
-
-    long countByUserAndPriorityAndNotCompleted(@Param("userUid") String userUid, @Param("priority") String priority);
 }

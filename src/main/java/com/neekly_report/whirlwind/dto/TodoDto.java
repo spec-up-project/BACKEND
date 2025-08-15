@@ -33,7 +33,7 @@ public class TodoDto {
         @Builder
         @AllArgsConstructor
         public static class TodoResponse {
-            private String tTodoUid;
+            private String todoUid;
             private String title;
             private String description;
             private String priority;

@@ -16,7 +16,7 @@ import lombok.*;
 public class RefreshToken {
     @Id
     @Column(name = "T_USER_UID")
-    private String tUserUid; // userId → tUserUid
+    private String userUid; // userId → tUserUid
 
     @Column(name = "REFRESH_TOKEN", nullable = false, length = 512)
     private String refreshToken;

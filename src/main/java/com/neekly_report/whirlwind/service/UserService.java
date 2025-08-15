@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
 
         refreshTokenRepository.save(
                 RefreshToken.builder()
-                        .tUserUid(user.getUserUid())
+                        .userUid(user.getUserUid())
                         .refreshToken(refreshToken)
                         .build()
         );
