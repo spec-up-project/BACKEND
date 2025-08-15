@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class CategoryDto {
         @AllArgsConstructor
         @Builder
         public static class CategoryUpdateRequest {
+//            @JsonProperty("tCategoryUid")
             private String tCategoryUid;
 
             @NotBlank(message = "Category name is required")
@@ -45,6 +47,7 @@ public class CategoryDto {
         @AllArgsConstructor
         @Builder
         public static class CategoryResponse {
+            @JsonProperty("tCategoryUid")
             private String tCategoryUid;
             private String categoryName;
             private String segType;

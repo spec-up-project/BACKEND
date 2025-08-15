@@ -40,7 +40,7 @@ public class CategoryApiController {
         return ResponseEntity.ok(categories);
     }
 
-    @Operation(summary = "카테고리 생성")
+    @Operation(summary = "카테고리 생성 < MAIN : 대분류, SUB: 소분류 >")
     @PostMapping("insert")
     public ResponseEntity<CategoryDto.Response.CategoryResponse> createCategory(
             @RequestBody @Valid CategoryDto.Request.CategoryCreateRequest request,
