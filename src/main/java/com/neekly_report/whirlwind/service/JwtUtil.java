@@ -16,9 +16,9 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(String tUserUid, String email) {
+    public String generateToken(String userUid, String email) {
         return Jwts.builder()
-                .setSubject(tUserUid)
+                .setSubject(userUid)
                 .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
@@ -34,10 +34,10 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public String generateRefreshToken(String tUserUid, String email) {
+    public String generateRefreshToken(String userUid, String email) {
         long refreshTokenExpirationMs = 1000L * 60 * 60 * 24 * 7; // 7일
         return Jwts.builder()
-                .setSubject(tUserUid)
+                .setSubject(userUid)
                 .claim("email", email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpirationMs))

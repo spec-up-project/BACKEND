@@ -23,8 +23,8 @@ public class UserDto {
             this.user = user;
         }
 
-        public String getTUserUid() {
-            return user.getTUserUid();
+        public String getUserUid() {
+            return user.getUserUid();
         }
 
         public String getEmail() {
@@ -111,7 +111,7 @@ public class UserDto {
         @Builder
         @AllArgsConstructor
         public static class UserRegisterResponse {
-            private String tUserUid;
+            private String userUid;
             private String userName;
             private String email;
             private String password;

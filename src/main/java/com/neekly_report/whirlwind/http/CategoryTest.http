@@ -34,7 +34,7 @@ Authorization: Bearer {{ refreshToken }}
 Content-Type: application/json
 
 {
-  "tCategoryUid": "2c7406ff-775b-44d9-87a0-aa995a4cddb1",
+  "categoryUid": "2c7406ff-775b-44d9-87a0-aa995a4cddb1",
   "categoryName": "대분류 수정",
   "segType": "MAIN"
 }

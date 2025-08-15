@@ -55,12 +55,12 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtUtil.generateToken(user.getTUserUid(), user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getTUserUid(), user.getEmail());
+        String accessToken = jwtUtil.generateToken(user.getUserUid(), user.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getUserUid(), user.getEmail());
 
         refreshTokenRepository.save(
                 RefreshToken.builder()
-                        .tUserUid(user.getTUserUid())
+                        .tUserUid(user.getUserUid())
                         .refreshToken(refreshToken)
                         .build()
         );

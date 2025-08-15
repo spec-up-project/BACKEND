@@ -9,12 +9,11 @@ import java.util.List;
 
 public interface CategoryRepository extends JpaRepository<Category, String> {
 
-    List<Category> findByUser_tUserUid(String tUserUid);
+    List<Category> findByUser_userUid(String userUid);
 
-    List<Category> findByUser_tUserUidAndSegType(String tUserUid, String segType);
+    List<Category> findByUser_userUidAndSegType(String userUid, String segType);
+    
+    Category findByCategoryUidAndUser_userUid(@Param("userUserUid") String userUserUid, @Param("categoryUid") String categoryUid);
 
-    @Query("SELECT c FROM Category c WHERE c.user.tUserUid = :userTUserUid AND c.tCategoryUid = :tCategoryUid")
-    Category findByTCategoryUidAndUser_tUserUid(@Param("userTUserUid") String userTUserUid, @Param("tCategoryUid") String tCategoryUid);
-
-    List<Category> findByUser_tUserUidAndCategoryNameContaining(String tUserUid, String categoryName);
+    List<Category> findByUser_userUidAndCategoryNameContaining(String userUid, String categoryName);
 }

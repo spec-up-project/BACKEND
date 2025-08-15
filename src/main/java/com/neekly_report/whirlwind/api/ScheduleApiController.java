@@ -30,7 +30,7 @@ public class ScheduleApiController {
             @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDto.Response.ScheduleResponse schedule = scheduleService.createSchedule(userDetail.getTUserUid(), request);
+        ScheduleDto.Response.ScheduleResponse schedule = scheduleService.createSchedule(userDetail.getUserUid(), request);
         return ResponseEntity.ok(schedule);
     }
 
@@ -39,7 +39,7 @@ public class ScheduleApiController {
     public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> getUserSchedules(
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDto.Response.ScheduleResponse> schedules = scheduleService.getUserSchedules(userDetail.getTUserUid());
+        List<ScheduleDto.Response.ScheduleResponse> schedules = scheduleService.getUserSchedules(userDetail.getUserUid());
         return ResponseEntity.ok(schedules);
     }
 
@@ -48,7 +48,7 @@ public class ScheduleApiController {
     public ResponseEntity<ScheduleDto.Response.ScheduleResponse> getUserSchedulesDetail(
             @PathVariable String tScheduleUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.getUserSchedulesDetail(userDetail.getTUserUid(), tScheduleUid);
+        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.getUserSchedulesDetail(userDetail.getUserUid(), tScheduleUid);
         return ResponseEntity.ok(schedules);
     }
 
@@ -58,7 +58,7 @@ public class ScheduleApiController {
             @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.insertSchedules(userDetail.getTUserUid(), request);
+        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.insertSchedules(userDetail.getUserUid(), request);
         return ResponseEntity.ok(schedules);
     }
 
@@ -68,7 +68,7 @@ public class ScheduleApiController {
             @RequestBody @Valid ScheduleDto.Request.ScheduleUpdateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.updateSchedules(userDetail.getTUserUid(), request);
+        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.updateSchedules(userDetail.getUserUid(), request);
         return ResponseEntity.ok(schedules);
     }
 
@@ -77,7 +77,7 @@ public class ScheduleApiController {
     public ResponseEntity<String> deleteSchedule(
             @PathVariable String tScheduleUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        return ResponseEntity.ok(scheduleService.deleteSchedules(tScheduleUid, userDetail.getTUserUid()));
+        return ResponseEntity.ok(scheduleService.deleteSchedules(tScheduleUid, userDetail.getUserUid()));
     }
 
     @PostMapping("/nlp/text")
@@ -89,7 +89,7 @@ public class ScheduleApiController {
                 extractionService.extractSchedulesFromText(request.getText(), "TEXT");
 
         List<ScheduleDto.Response.ScheduleResponse> saved = extracted.stream()
-                .map(schedule -> scheduleService.createSchedule(userDetail.getTUserUid(), schedule))
+                .map(schedule -> scheduleService.createSchedule(userDetail.getUserUid(), schedule))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(saved);
@@ -129,7 +129,7 @@ public class ScheduleApiController {
                 .source(request.getSource())
                 .build();
 
-        ScheduleDto.Response.ScheduleResponse saved = scheduleService.createSchedule(userDetail.getTUserUid(), scheduleRequest);
+        ScheduleDto.Response.ScheduleResponse saved = scheduleService.createSchedule(userDetail.getUserUid(), scheduleRequest);
         return ResponseEntity.ok(saved);
     }
 
@@ -148,7 +148,7 @@ public class ScheduleApiController {
                             .rawText(request.getRawText())
                             .source(request.getSource())
                             .build();
-                    return scheduleService.createSchedule(userDetail.getTUserUid(), scheduleRequest);
+                    return scheduleService.createSchedule(userDetail.getUserUid(), scheduleRequest);
                 })
                 .collect(Collectors.toList());
 

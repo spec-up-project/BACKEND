@@ -40,10 +40,10 @@ public class ExtractionApiController {
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         log.info("텍스트 추출 요청 - 사용자: {}, 텍스트 길이: {}자",
-                userDetail.getTUserUid(), request.getText().length());
+                userDetail.getUserUid(), request.getText().length());
 
         ExtractionDto.Response.ExtractionResult result =
-                extractionService.extractFromText(request, userDetail.getTUserUid());
+                extractionService.extractFromText(request, userDetail.getUserUid());
 
         return ResponseEntity.ok(ApiResponseDto.success(result, "텍스트 추출이 완료되었습니다."));
     }
@@ -56,10 +56,10 @@ public class ExtractionApiController {
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         log.info("이메일 추출 요청 - 사용자: {}, 제목: {}",
-                userDetail.getTUserUid(), request.getSubject());
+                userDetail.getUserUid(), request.getSubject());
 
         ExtractionDto.Response.ExtractionResult result =
-                extractionService.extractFromEmail(request, userDetail.getTUserUid());
+                extractionService.extractFromEmail(request, userDetail.getUserUid());
 
         return ResponseEntity.ok(ApiResponseDto.success(result, "이메일 추출이 완료되었습니다."));
     }

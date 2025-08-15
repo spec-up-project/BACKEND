@@ -40,7 +40,7 @@ public class TodoService {
     }
 
     public List<TodoDto.Response.TodoResponse> getUserTodos(String tUserUid) {
-        return todoRepository.findByUser_tUserUid(tUserUid)
+        return todoRepository.findByUser_userUid(tUserUid)
                 .stream()
                 .map(t -> TodoDto.Response.TodoResponse.builder()
                         .tTodoUid(t.getTTodoUid())

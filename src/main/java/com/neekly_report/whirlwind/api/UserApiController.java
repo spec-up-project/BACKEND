@@ -43,7 +43,7 @@ public class UserApiController {
     @PostMapping("/logout")
     public ResponseEntity<?> logout(Authentication authentication) {
         UserDto.UserDetail userDetail = (UserDto.UserDetail) authentication.getPrincipal();
-        String userId = userDetail.getTUserUid();
+        String userId = userDetail.getUserUid();
         userService.logout(userId);
         return ResponseEntity.ok("로그아웃 되었습니다.");
     }

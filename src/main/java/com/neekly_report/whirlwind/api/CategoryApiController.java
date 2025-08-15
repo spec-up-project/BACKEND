@@ -26,7 +26,7 @@ public class CategoryApiController {
     public ResponseEntity<List<CategoryDto.Response.CategoryResponse>> getUserCategories(
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<CategoryDto.Response.CategoryResponse> categories = categoryService.getUserCategories(userDetail.getTUserUid());
+        List<CategoryDto.Response.CategoryResponse> categories = categoryService.getUserCategories(userDetail.getUserUid());
         return ResponseEntity.ok(categories);
     }
 
@@ -36,7 +36,7 @@ public class CategoryApiController {
             @PathVariable String segType,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<CategoryDto.Response.CategoryResponse> categories = categoryService.getCategoriesBySegType(userDetail.getTUserUid(), segType);
+        List<CategoryDto.Response.CategoryResponse> categories = categoryService.getCategoriesBySegType(userDetail.getUserUid(), segType);
         return ResponseEntity.ok(categories);
     }
 
@@ -46,7 +46,7 @@ public class CategoryApiController {
             @RequestBody @Valid CategoryDto.Request.CategoryCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        CategoryDto.Response.CategoryResponse category = categoryService.createCategory(userDetail.getTUserUid(), request);
+        CategoryDto.Response.CategoryResponse category = categoryService.createCategory(userDetail.getUserUid(), request);
         return ResponseEntity.ok(category);
     }
 
@@ -56,17 +56,17 @@ public class CategoryApiController {
             @RequestBody @Valid CategoryDto.Request.CategoryUpdateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        CategoryDto.Response.CategoryResponse category = categoryService.updateCategory(userDetail.getTUserUid(), request);
+        CategoryDto.Response.CategoryResponse category = categoryService.updateCategory(userDetail.getUserUid(), request);
         return ResponseEntity.ok(category);
     }
 
     @Operation(summary = "카테고리 삭제")
-    @DeleteMapping("/delete/{tCategoryUid}")
+    @DeleteMapping("/delete/{categoryUid}")
     public ResponseEntity<String> deleteCategory(
-            @PathVariable String tCategoryUid,
+            @PathVariable String categoryUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        String result = categoryService.deleteCategory(userDetail.getTUserUid(), tCategoryUid);
+        String result = categoryService.deleteCategory(userDetail.getUserUid(), categoryUid);
         return ResponseEntity.ok(result);
     }
 }

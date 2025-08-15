@@ -26,7 +26,7 @@ public class TodoManagementService {
     public List<TodoDto.Response.TodoItem> getUserTodos(String userId) {
         log.info("사용자 할일 조회 - 사용자ID: {}", userId);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUid(userId);
+        List<Todo> todos = todoRepository.findByUser_userUid(userId);
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -51,7 +51,7 @@ public class TodoManagementService {
     public List<TodoDto.Response.TodoItem> getTodosByStatus(String userId, String status) {
         log.info("상태별 할일 조회 - 사용자ID: {}, 상태: {}", userId, status);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndStatus(userId, status);
+        List<Todo> todos = todoRepository.findByUser_userUidAndStatus(userId, status);
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -65,7 +65,7 @@ public class TodoManagementService {
     public List<TodoDto.Response.TodoItem> getTodosByPriority(String userId, String priority) {
         log.info("우선순위별 할일 조회 - 사용자ID: {}, 우선순위: {}", userId, priority);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndPriority(userId, priority);
+        List<Todo> todos = todoRepository.findByUser_userUidAndPriority(userId, priority);
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -80,7 +80,7 @@ public class TodoManagementService {
         log.info("기한 초과 할일 조회 - 사용자ID: {}", userId);
 
         LocalDateTime now = LocalDateTime.now();
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndDueDateBeforeAndStatusNot(userId, now, "COMPLETED");
+        List<Todo> todos = todoRepository.findByUser_userUidAndDueDateBeforeAndStatusNot(userId, now, "COMPLETED");
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -93,7 +93,7 @@ public class TodoManagementService {
     public TodoDto.Response.TodoItem completeTodo(String userId, String todoId) {
         log.info("할일 완료 처리 - 사용자ID: {}, 할일ID: {}", userId, todoId);
 
-        Todo todo = todoRepository.findBytTodoUidAndUser_tUserUid(todoId, userId)
+        Todo todo = todoRepository.findBytTodoUidAndUser_userUid(todoId, userId)
                 .orElseThrow(() -> new RuntimeException("할일을 찾을 수 없습니다"));
 
         todo.setStatus("COMPLETED");
@@ -108,7 +108,7 @@ public class TodoManagementService {
     public TodoDto.Response.TodoItem updateTodoStatus(String userId, String todoId, String status) {
         log.info("할일 상태 변경 - 사용자ID: {}, 할일ID: {}, 상태: {}", userId, todoId, status);
 
-        Todo todo = todoRepository.findBytTodoUidAndUser_tUserUid(todoId, userId)
+        Todo todo = todoRepository.findBytTodoUidAndUser_userUid(todoId, userId)
                 .orElseThrow(() -> new RuntimeException("할일을 찾을 수 없습니다"));
 
         todo.setStatus(status);
@@ -124,7 +124,7 @@ public class TodoManagementService {
     public List<TodoDto.Response.TodoItem> searchTodos(String userId, String keyword) {
         log.info("할일 검색 - 사용자ID: {}, 키워드: {}", userId, keyword);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndTitleContainingOrDescriptionContaining(
+        List<Todo> todos = todoRepository.findByUser_userUidAndTitleContainingOrDescriptionContaining(
                 userId, keyword, keyword);
 
         return todos.stream()
@@ -140,7 +140,7 @@ public class TodoManagementService {
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndDueDateBetween(userId, startOfDay, endOfDay);
+        List<Todo> todos = todoRepository.findByUser_userUidAndDueDateBetween(userId, startOfDay, endOfDay);
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -156,7 +156,7 @@ public class TodoManagementService {
                 .withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
-        List<Todo> todos = todoRepository.findByUser_tUserUidAndDueDateBetween(userId, startOfWeek, endOfWeek);
+        List<Todo> todos = todoRepository.findByUser_userUidAndDueDateBetween(userId, startOfWeek, endOfWeek);
 
         return todos.stream()
                 .map(this::toTodoItem)
@@ -168,7 +168,7 @@ public class TodoManagementService {
      */
     @Transactional(readOnly = true)
     public double getCompletionRate(String userId) {
-        List<Todo> allTodos = todoRepository.findByUser_tUserUid(userId);
+        List<Todo> allTodos = todoRepository.findByUser_userUid(userId);
 
         if (allTodos.isEmpty()) return 0.0;
 

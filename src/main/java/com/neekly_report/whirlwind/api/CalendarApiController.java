@@ -33,7 +33,7 @@ public class CalendarApiController {
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         List<CalendarDto.Response.CalendarEvent> events =
-                calendarService.getUserEvents(userDetail.getTUserUid());
+                calendarService.getUserEvents(userDetail.getUserUid());
 
         return ResponseEntity.ok(ApiResponseDto.success(events));
     }
@@ -49,7 +49,7 @@ public class CalendarApiController {
 
         List<CalendarDto.Response.CalendarEvent> events =
                 calendarService.getEventsByDateRange(
-                        userDetail.getTUserUid(),
+                        userDetail.getUserUid(),
                         startDate.atStartOfDay(),
                         endDate.atTime(23, 59, 59));
 
@@ -63,7 +63,7 @@ public class CalendarApiController {
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         List<CalendarDto.Response.CalendarEvent> events =
-                calendarService.searchEvents(userDetail.getTUserUid(), keyword);
+                calendarService.searchEvents(userDetail.getUserUid(), keyword);
 
         return ResponseEntity.ok(ApiResponseDto.success(events));
     }
