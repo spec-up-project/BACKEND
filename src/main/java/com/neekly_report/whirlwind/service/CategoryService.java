@@ -35,7 +35,7 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public CategoryDto.Response.CategoryResponse createCategory(String tUserUid, CategoryDto.Request.CategoryCreateRequest dto) {
+    public CategoryDto.Response.CategoryResponse createCategory(CategoryDto.Request.CategoryCreateRequest dto, String tUserUid) {
         User user = userRepository.findById(tUserUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
@@ -46,23 +46,21 @@ public class CategoryService {
         return categoryMapper.toResponse(saved);
     }
 
-    public CategoryDto.Response.CategoryResponse updateCategory(String tUserUid, CategoryDto.Request.CategoryUpdateRequest dto) {
-        Category category = categoryRepository.findByCategoryUidAndUser_userUid(tUserUid, dto.getCategoryUid());
+    public CategoryDto.Response.CategoryResponse updateCategory(CategoryDto.Request.CategoryUpdateRequest dto, String tUserUid) {
 
-        if (category == null) {
-            throw new RuntimeException("카테고리를 찾을 수 없거나 접근 권한이 없습니다");
-        }
+        User user = userRepository.findById(tUserUid)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
-        category.setCategoryName(dto.getCategoryName());
-        category.setSegType(dto.getSegType());
+        Category category = categoryMapper.toEntity(dto);
+        category.setUser(user);
 
         Category saved = categoryRepository.save(category);
         return categoryMapper.toResponse(saved);
     }
 
-    public String deleteCategory(String tUserUid, String categoryUid) {
+    public String deleteCategory(String categoryUid, String tUserUid) {
         try {
-            Category category = categoryRepository.findByCategoryUidAndUser_userUid(tUserUid, categoryUid);
+            Category category = categoryRepository.findByCategoryUidAndUser_userUid(categoryUid, tUserUid);
 
             if (category == null) {
                 throw new RuntimeException("카테고리를 찾을 수 없거나 접근 권한이 없습니다");

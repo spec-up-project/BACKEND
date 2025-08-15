@@ -13,7 +13,8 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     List<Category> findByUser_userUidAndSegType(String userUid, String segType);
     
-    Category findByCategoryUidAndUser_userUid(@Param("userUserUid") String userUserUid, @Param("categoryUid") String categoryUid);
+//    Category findByCategoryUidAndUser_userUid(String userUserUid, String categoryUid);
 
+    Category findByCategoryUidAndUser_userUid(String categoryUid, String userUid);
     List<Category> findByUser_userUidAndCategoryNameContaining(String userUid, String categoryName);
 }

@@ -46,7 +46,7 @@ public class CategoryApiController {
             @RequestBody @Valid CategoryDto.Request.CategoryCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        CategoryDto.Response.CategoryResponse category = categoryService.createCategory(userDetail.getUserUid(), request);
+        CategoryDto.Response.CategoryResponse category = categoryService.createCategory(request, userDetail.getUserUid());
         return ResponseEntity.ok(category);
     }
 
@@ -56,7 +56,7 @@ public class CategoryApiController {
             @RequestBody @Valid CategoryDto.Request.CategoryUpdateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        CategoryDto.Response.CategoryResponse category = categoryService.updateCategory(userDetail.getUserUid(), request);
+        CategoryDto.Response.CategoryResponse category = categoryService.updateCategory(request, userDetail.getUserUid());
         return ResponseEntity.ok(category);
     }
 
@@ -66,7 +66,7 @@ public class CategoryApiController {
             @PathVariable String categoryUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        String result = categoryService.deleteCategory(userDetail.getUserUid(), categoryUid);
+        String result = categoryService.deleteCategory(categoryUid, userDetail.getUserUid());
         return ResponseEntity.ok(result);
     }
 }

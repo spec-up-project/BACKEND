@@ -20,7 +20,7 @@ public class User extends Common {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "USER_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
+    @Column(name = "T_USER_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
     private String userUid;
 
     @Comment("이름")
