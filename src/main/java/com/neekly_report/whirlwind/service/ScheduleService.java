@@ -23,8 +23,8 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final ScheduleMapper scheduleMapper;
 
-    public ScheduleDto.Response.ScheduleResponse createSchedule(String tUserUid, ScheduleDto.Request.ScheduleCreateRequest dto) {
-        User user = userRepository.findById(tUserUid)
+    public ScheduleDto.Response.ScheduleResponse createSchedule(String userUid, ScheduleDto.Request.ScheduleCreateRequest dto) {
+        User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
         List<DucklingService.DateTimeInfo> times = ducklingService.extractDateTime(dto.getRawText(), "ko_KR");
@@ -47,21 +47,21 @@ public class ScheduleService {
         return scheduleMapper.toResponse(saved);
     }
 
-    public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String tUserUid) {
-        return scheduleRepository.findByUser_userUid(tUserUid)
+    public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String userUid) {
+        return scheduleRepository.findByUser_userUid(userUid)
                 .stream()
                 .map(scheduleMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
-    public ScheduleDto.Response.ScheduleResponse getUserSchedulesDetail(String tUserUid, String tScheduleUid) {
-        Schedule schedule = scheduleRepository.findByScheduleUidAndUser_userUid(tUserUid, tScheduleUid);
+    public ScheduleDto.Response.ScheduleResponse getUserSchedulesDetail(String scheduleUid, String userUid) {
+        Schedule schedule = scheduleRepository.findByScheduleUidAndUser_userUid(scheduleUid, userUid);
         return scheduleMapper.toResponse(schedule);
     }
 
     @Transactional(readOnly = true)
-    public ScheduleDto.Response.ScheduleResponse insertSchedules(String tUserUid, ScheduleDto.Request.ScheduleCreateRequest request) {
-        User user = userRepository.findById(tUserUid)
+    public ScheduleDto.Response.ScheduleResponse insertSchedules(String userUid, ScheduleDto.Request.ScheduleCreateRequest request) {
+        User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
         Schedule schedule = scheduleMapper.toEntity(request);
@@ -71,8 +71,8 @@ public class ScheduleService {
     }
 
     @Transactional
-    public ScheduleDto.Response.ScheduleResponse updateSchedules(String tUserUid, ScheduleDto.Request.ScheduleUpdateRequest request) {
-        User user = userRepository.findById(tUserUid)
+    public ScheduleDto.Response.ScheduleResponse updateSchedules(String userUid, ScheduleDto.Request.ScheduleUpdateRequest request) {
+        User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
         request.setUser(user);
 
@@ -80,12 +80,12 @@ public class ScheduleService {
     }
 
     @Transactional
-    public String deleteSchedules(String tScheduleUid, String tUserUid) {
+    public String deleteSchedules(String scheduleUid, String userUid) {
         try {
-            scheduleRepository.deleteByScheduleUidAndUser_userUid(tScheduleUid, tUserUid);
-            return tUserUid;
+            scheduleRepository.deleteByScheduleUidAndUser_userUid(scheduleUid, userUid);
+            return userUid;
         } catch (Exception e) {
-            return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + tUserUid;
+            return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + userUid;
         }
     }
 }

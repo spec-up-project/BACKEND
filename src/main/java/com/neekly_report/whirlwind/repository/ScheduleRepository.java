@@ -13,7 +13,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, String> {
 
     List<Schedule> findByUser_userUidAndStartTimeBetween(String userUid, LocalDateTime startTime, LocalDateTime endTime);
 
-    Schedule findByScheduleUidAndUser_userUid(String userUid, String tScheduleUid);
+    Schedule findByScheduleUidAndUser_userUid(String scheduleUid, String userUid);
 
     List<Schedule> findByUser_userUidAndTitleContainingOrContentContaining(String userUid, String title, String content);
 

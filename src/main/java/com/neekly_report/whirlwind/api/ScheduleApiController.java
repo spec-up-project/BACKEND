@@ -44,11 +44,11 @@ public class ScheduleApiController {
     }
 
     @Operation(summary = "사용자별 캘린더 상세 조회 ")
-    @GetMapping("detail/{tScheduleUid}")
+    @GetMapping("detail/{scheduleUid}")
     public ResponseEntity<ScheduleDto.Response.ScheduleResponse> getUserSchedulesDetail(
-            @PathVariable String tScheduleUid,
+            @PathVariable String scheduleUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.getUserSchedulesDetail(userDetail.getUserUid(), tScheduleUid);
+        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.getUserSchedulesDetail(scheduleUid, userDetail.getUserUid());
         return ResponseEntity.ok(schedules);
     }
 
@@ -73,11 +73,11 @@ public class ScheduleApiController {
     }
 
     @Operation(summary = "캘린더 수동 일정 삭제")
-    @DeleteMapping("delete/{tScheduleUid}")
+    @DeleteMapping("delete/{scheduleUid}")
     public ResponseEntity<String> deleteSchedule(
-            @PathVariable String tScheduleUid,
+            @PathVariable String scheduleUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        return ResponseEntity.ok(scheduleService.deleteSchedules(tScheduleUid, userDetail.getUserUid()));
+        return ResponseEntity.ok(scheduleService.deleteSchedules(scheduleUid, userDetail.getUserUid()));
     }
 
     @PostMapping("/nlp/text")
