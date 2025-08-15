@@ -47,7 +47,7 @@ public class CategoryService {
     }
 
     public CategoryDto.Response.CategoryResponse updateCategory(String tUserUid, CategoryDto.Request.CategoryUpdateRequest dto) {
-        Category category = categoryRepository.findByTCategoryUidAndUser_tUserUid(tUserUid, dto.getTCategoryUid());
+        Category category = categoryRepository.findByTCategoryUidAndUser_tUserUid(tUserUid, dto.getCategoryUid());
 
         if (category == null) {
             throw new RuntimeException("카테고리를 찾을 수 없거나 접근 권한이 없습니다");
@@ -60,18 +60,18 @@ public class CategoryService {
         return categoryMapper.toResponse(saved);
     }
 
-    public String deleteCategory(String tUserUid, String tCategoryUid) {
+    public String deleteCategory(String tUserUid, String categoryUid) {
         try {
-            Category category = categoryRepository.findByTCategoryUidAndUser_tUserUid(tUserUid, tCategoryUid);
+            Category category = categoryRepository.findByTCategoryUidAndUser_tUserUid(tUserUid, categoryUid);
 
             if (category == null) {
                 throw new RuntimeException("카테고리를 찾을 수 없거나 접근 권한이 없습니다");
             }
 
             categoryRepository.delete(category);
-            return tCategoryUid;
+            return categoryUid;
         } catch (Exception e) {
-            return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + tCategoryUid;
+            return e.getStackTrace()[0].toString() + " : " + e.getMessage() + " : " + categoryUid;
         }
     }
 }

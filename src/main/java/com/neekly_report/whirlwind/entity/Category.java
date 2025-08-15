@@ -17,8 +17,8 @@ public class Category extends Common {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "T_CATEGORY_UID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
-    private String tCategoryUid;
+    @Column(name = "CATEGORY_UID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
+    private String categoryUid;
 
     @Column(name = "CATEGORY_NAME")
     @Comment("분류 명")
