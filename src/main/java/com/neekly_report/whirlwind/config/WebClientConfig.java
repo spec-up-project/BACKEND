@@ -25,17 +25,6 @@ public class WebClientConfig {
                 .build();
 
         HttpClient httpClient = HttpClient.create(connectionProvider)
-                .secure(spec -> {
-                            try {
-                                spec.sslContext(
-                                        SslContextBuilder.forClient()
-                                        .trustManager(InsecureTrustManagerFactory.INSTANCE).build()
-                                        );
-                            } catch (SSLException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                ) // 테스트용 TLS 우회
                 .responseTimeout(Duration.ofSeconds(120))
                 .keepAlive(true);
 
