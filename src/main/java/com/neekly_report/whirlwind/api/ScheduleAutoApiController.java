@@ -7,7 +7,6 @@ import com.neekly_report.whirlwind.service.ExtractionService;
 import com.neekly_report.whirlwind.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -54,32 +53,6 @@ public class ScheduleAutoApiController {
         return ResponseEntity.ok(schedules);
     }
 
-    @Operation(summary = "캘린더 수동 일정 저장")
-    @PostMapping("insert")
-    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> insertSchedule(
-            @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.insertSchedules(userDetail.getUserUid(), request);
-        return ResponseEntity.ok(schedules);
-    }
-
-    @Operation(summary = "캘린더 수동 일정 수정")
-    @PostMapping("update")
-    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> updateSchedule(
-            @RequestBody @Valid ScheduleDto.Request.ScheduleUpdateRequest request,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.updateSchedules(userDetail.getUserUid(), request);
-        return ResponseEntity.ok(schedules);
-    }
-
-    @Operation(summary = "캘린더 수동 일정 삭제")
-    @DeleteMapping("delete/{scheduleUid}")
-    public ResponseEntity<String> deleteSchedule(
-            @PathVariable String scheduleUid,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        return ResponseEntity.ok(scheduleService.deleteSchedules(scheduleUid, userDetail.getUserUid()));
-    }
 }
 

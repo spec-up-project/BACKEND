@@ -34,7 +34,7 @@ public class WeeklyReportService {
     private final WeeklyReportRepository weeklyReportRepository;
     private final CategoryRepository categoryRepository;
 
-    private final CalendarService calendarService;
+    private final ScheduleService scheduleService;
     private final OllamaService ollamaService;
     private final ExtractionService extractionService;
 
@@ -53,10 +53,10 @@ public class WeeklyReportService {
 
         // 데이터 수집
         List<CalendarEvent> weekEvents =
-                calendarService.getEventsByDateRange(userUid, startOfWeek, endOfWeek);
+                scheduleService.getEventsByDateRange(userUid, startOfWeek, endOfWeek);
 
         List<CalendarEvent> upcomingEvents =
-                calendarService.getUpcomingEvents(userUid);
+                scheduleService.getUpcomingEvents(userUid);
 
         // 통계 계산
         WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
@@ -156,10 +156,10 @@ public class WeeklyReportService {
 
         // 데이터 수집
         List<CalendarEvent> weekEvents =
-                calendarService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
+                scheduleService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
 
         List<CalendarEvent> upcomingEvents =
-                calendarService.getUpcomingEvents(userId);
+                scheduleService.getUpcomingEvents(userId);
 
         // 통계 계산
         WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
@@ -295,7 +295,7 @@ public class WeeklyReportService {
                 .withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
-        List<CalendarEvent> weekEvents = calendarService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
+        List<CalendarEvent> weekEvents = scheduleService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
         WeeklySummary summary = calculateWeeklySummary(weekEvents);
 
         // 엑셀 생성
