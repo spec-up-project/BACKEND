@@ -33,7 +33,10 @@ public class CalendarService {
 
         return schedules.stream()
                 .map(calendarMapper::toCalendarEvent)
-                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
+                .sorted(Comparator.comparing(
+                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
                 .toList();
     }
 
@@ -50,7 +53,10 @@ public class CalendarService {
 
         return schedules.stream()
                 .map(calendarMapper::toCalendarEvent)
-                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
+                .sorted(Comparator.comparing(
+                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
                 .toList();
     }
 
@@ -65,7 +71,10 @@ public class CalendarService {
 
         return schedules.stream()
                 .map(calendarMapper::toCalendarEvent)
-                .sorted(Comparator.comparing(CalendarEvent::getStartTime))
+                .sorted(Comparator.comparing(
+                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                ))
                 .toList();
     }
 
