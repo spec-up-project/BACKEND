@@ -27,7 +27,7 @@ public class WeeklyReportApiController {
     /**
      * 주간 보고서 (json 형식)
      */
-    @GetMapping("/make")
+    @PostMapping("/make")
     public ResponseEntity<ReportDto.Response.TextReport> makeReport(@RequestBody @Valid ReportDto.Request.TextReport textReport,
                                                                       @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
