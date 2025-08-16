@@ -95,6 +95,7 @@ public class ExtractionDto {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
+        @ToString(exclude = {"structuredData"})
         public static class ParsedExtractionData {
             private List<Schedule> schedules;
             private String structuredData;

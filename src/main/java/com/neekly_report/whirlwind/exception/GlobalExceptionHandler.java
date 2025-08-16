@@ -44,6 +44,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(NoDateTimeFormatException.class)
+    public ResponseEntity<Map<String, String>> handleNoDateTimeFormatException(NoDateTimeFormatException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "NO_DATE_TIME_FORMAT");
+        errorResponse.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
     // 기타 RuntimeException 처리
     @ExceptionHandler(RuntimeException.class)

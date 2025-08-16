@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "T_SCHEDULE")
+@ToString(exclude = {"scheduleUid", "user", "rawText"})
 public class Schedule extends Common {
 
     @Id

@@ -49,18 +49,25 @@ public class DucklingService {
     public List<DateTimeInfo> extractDateTime(String text, String locale) {
         List<DateTimeInfo> results = new ArrayList<>();
         try {
+            // 전처리: "9월 2일" → "2025-09-02" 형식으로 변환
+            String preprocessedText = preprocessDateExpressions(text);
+
             MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-            requestBody.add("text", text);
+            requestBody.add("text", preprocessedText);
             requestBody.add("locale", locale);
             requestBody.add("dims", "[\"time\"]");
+
+            // 기준 시간 추가 (상대 표현 처리용)
+//            requestBody.add("reftime", LocalDateTime.now().toString());
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(requestBody, headers);
-
             ResponseEntity<String> response = restTemplate.postForEntity(DUCKLING_URL, request, String.class);
+
             JsonNode root = objectMapper.readTree(response.getBody());
+            log.debug("Duckling raw response: {}", response.getBody());
 
             for (JsonNode node : root) {
                 if (node.has("dim") && "time".equals(node.get("dim").asText())) {
@@ -97,7 +104,7 @@ public class DucklingService {
             return new ArrayList<>();
         }
     }
-    
+
     /**
      * Duckling 날짜/시간 문자열을 LocalDateTime으로 변환
      */
@@ -111,7 +118,21 @@ public class DucklingService {
             return LocalDateTime.now();
         }
     }
-    
+
+    public boolean hasValidDateTime(String text, String locale) {
+        List<DateTimeInfo> results = extractDateTime(text, locale);
+        log.info("callback result hasValidDateTime: {} - {}", results, results != null && !results.isEmpty());
+        return results != null && !results.isEmpty();
+    }
+
+    private String preprocessDateExpressions(String text) {
+        // 예시: "9월 2일" → "2025-09-02"
+        String currentYear = String.valueOf(LocalDate.now().getYear());
+
+        // 간단한 정규식 기반 치환 (확장 가능)
+        return text.replaceAll("(\\d{1,2})월\\s*(\\d{1,2})일", currentYear + "-$1-$2");
+    }
+
     /**
      * 날짜/시간 정보를 담는 내부 클래스
      */

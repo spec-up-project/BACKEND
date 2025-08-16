@@ -61,17 +61,19 @@ public class WeeklyReportDto {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class WeeklyReport {
+        public static class WeeklyReportResult {
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             private LocalDateTime reportDate;
 
             private String reportPeriod; // "2024-08-01 ~ 2024-08-07"
 
+            private String title;
             private WeeklySummary summary;
             private List<ScheduleDto.Response.CalendarEvent> upcomingEvents;
             private List<TodoDto.Response.TodoItem> pendingTodos;
             private List<TodoDto.Response.TodoItem> completedTodos;
             private String reportContent;
+            private String userUid;
         }
 
         @Data
@@ -124,8 +126,6 @@ public class WeeklyReportDto {
             private String reportUid;
             private String title;
             private String content;
-            private String mainCategoryName;
-            private String subCategoryName;
         }
     }
 }

@@ -43,7 +43,7 @@ public class WeeklyReportService {
     /**
      * 주간 리포트 생성
      */
-    public WeeklyReportDto.Response.WeeklyReport generateWeeklyReport(String userUid, String chat) {
+    public WeeklyReportDto.Response.WeeklyReportResult generateWeeklyReport(String userUid, String chat) {
         log.info("주간 리포트 생성 - 사용자ID: {}", userUid);
 
         LocalDateTime now = LocalDateTime.now();
@@ -62,8 +62,11 @@ public class WeeklyReportService {
         WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
                 weekEvents);
         ExtractionDto.Response.ParsedExtractionData extractionData = extractionService.extractScheduleJson(chat, userUid);
+        log.info("Duckling 기반 일정 후보 수: {}", extractionData.getSchedules().size());
+
         String stats = String.format("완료율: %.1f%%, 생산성 점수: %d점",
                 summary.getCompletionRate(), summary.getProductivityScore());
+        log.info("ducking 합친 content 전체 = {}", extractionData.getSchedules().toString() + weekEvents);
 
         String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(
                 userUid, stats,extractionData.getSchedules().toString() + weekEvents
@@ -72,9 +75,10 @@ public class WeeklyReportService {
         String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 + " ~ " + endOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return WeeklyReportDto.Response.WeeklyReport.builder()
+        return WeeklyReportDto.Response.WeeklyReportResult.builder()
                 .reportDate(now)
                 .reportPeriod(reportPeriod)
+                .title(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고")
                 .summary(summary)
                 .upcomingEvents(upcomingEvents)
                 .reportContent(reportContent)
@@ -82,27 +86,16 @@ public class WeeklyReportService {
     }
 
     @Transactional
-    public WeeklyReportDto.Response.SaveResponse createReport(WeeklyReportDto.Request.SaveRequest request) {
-        User user = userRepository.findById(request.getUserUid())
+    public WeeklyReportDto.Response.WeeklyReportResult createReport(WeeklyReportDto.Response.WeeklyReportResult reportResult, String userUid) {
+        User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
-        Category mainCategory = categoryRepository.findById(request.getMainCategoryUid())
-                .orElseThrow(() -> new RuntimeException("대분류 없음"));
-
-        Category subCategory = categoryRepository.findById(request.getSubCategoryUid())
-                .orElseThrow(() -> new RuntimeException("소분류 없음"));
-
-        // Use OllamaService to generate report content
-        String generatedContent = ollamaService.makeReport(request.getContent());
-
-        WeeklyReport report = weeklyReportMapper.toEntity(request);
+        WeeklyReport report = weeklyReportMapper.toEntity(reportResult);
         report.setUser(user);
-//        report.setMainCategory(mainCategory);
-//        report.setSubCategory(subCategory);
-        report.setContent(generatedContent);
+        report.setContent(reportResult.getReportContent());
 
         weeklyReportRepository.save(report);
-        return weeklyReportMapper.toSaveResponse(report);
+        return weeklyReportMapper.toWeeklyReportResult(report);
     }
 
     @Transactional(readOnly = true)
@@ -144,7 +137,7 @@ public class WeeklyReportService {
     /**
      * 주간 리포트 생성
      */
-    public WeeklyReportDto.Response.WeeklyReport generateMarkdown(String userId) {
+    public WeeklyReportDto.Response.WeeklyReportResult generateMarkdown(String userId) {
         log.info("주간 리포트 생성 - 사용자ID: {}", userId);
 
         LocalDateTime now = LocalDateTime.now();
@@ -169,7 +162,7 @@ public class WeeklyReportService {
         String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 + " ~ " + endOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
-        return WeeklyReportDto.Response.WeeklyReport.builder()
+        return WeeklyReportDto.Response.WeeklyReportResult.builder()
                 .reportDate(now)
                 .reportPeriod(reportPeriod)
                 .summary(summary)

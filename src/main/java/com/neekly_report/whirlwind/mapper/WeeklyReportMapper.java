@@ -14,4 +14,8 @@ public interface WeeklyReportMapper {
     WeeklyReport toEntity(WeeklyReportDto.Request.SaveRequest request);
 
     WeeklyReportDto.Response.SaveResponse toSaveResponse(WeeklyReport report);
+
+    WeeklyReportDto.Response.WeeklyReportResult toWeeklyReportResult(WeeklyReport report);
+
+    WeeklyReport toEntity(WeeklyReportDto.Response.WeeklyReportResult reportResult);
 }

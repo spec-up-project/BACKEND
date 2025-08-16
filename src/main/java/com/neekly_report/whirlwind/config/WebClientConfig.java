@@ -17,12 +17,12 @@ public class WebClientConfig {
         // 커넥션 풀 설정
         ConnectionProvider connectionProvider = ConnectionProvider.builder("neeky")
                 .maxConnections(100)
-                .maxIdleTime(Duration.ofSeconds(20))
-                .maxLifeTime(Duration.ofSeconds(60))
+                .maxIdleTime(Duration.ofSeconds(300))
+                .maxLifeTime(Duration.ofSeconds(600))
                 .build();
 
         HttpClient httpClient = HttpClient.create(connectionProvider)
-                .responseTimeout(Duration.ofSeconds(120))
+                .responseTimeout(Duration.ofSeconds(600))
                 .keepAlive(true);
 
         return WebClient.builder()

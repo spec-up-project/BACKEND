@@ -33,10 +33,10 @@ public class WeeklyReportApiController {
      * 주간 팀 보고서 생성
      */
     @GetMapping
-    public ResponseEntity<WeeklyReportDto.Response.WeeklyReport> makeMainWeeklyReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
-                                                                                      @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        WeeklyReportDto.Response.WeeklyReport report = weeklyReportService.generateWeeklyReport(userDetail.getUserUid(), request.getChat());
-        return ResponseEntity.ok(report);
+    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportResult> makeMainWeeklyReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
+                                                                                            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
+        WeeklyReportDto.Response.WeeklyReportResult report = weeklyReportService.generateWeeklyReport(userDetail.getUserUid(), request.getChat());
+        return ResponseEntity.ok(weeklyReportService.createReport(report, userDetail.getUserUid()));
     }
 
     /**
@@ -47,11 +47,6 @@ public class WeeklyReportApiController {
                                                                           @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         return ResponseEntity.ok(weeklyReportService.makeReport(textReport, userDetail.getUserUid()));
-    }
-
-    @PostMapping("/text")
-    public ResponseEntity<WeeklyReportDto.Response.SaveResponse> createReport(@RequestBody WeeklyReportDto.Request.SaveRequest request) {
-        return ResponseEntity.ok(weeklyReportService.createReport(request));
     }
 
     @GetMapping("/weekly")
@@ -72,8 +67,8 @@ public class WeeklyReportApiController {
      * 주간 팀 보고서 (Markdown 형식)
      */
     @GetMapping("/weekly/markdown")
-    public ResponseEntity<WeeklyReportDto.Response.WeeklyReport> getWeeklyMarkdownReport(@RequestParam String userId) {
-        WeeklyReportDto.Response.WeeklyReport report = weeklyReportService.generateMarkdown(userId);
+    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportResult> getWeeklyMarkdownReport(@RequestParam String userId) {
+        WeeklyReportDto.Response.WeeklyReportResult report = weeklyReportService.generateMarkdown(userId);
         return ResponseEntity.ok(report);
     }
 

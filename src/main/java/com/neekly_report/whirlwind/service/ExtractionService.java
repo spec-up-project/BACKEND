@@ -8,6 +8,7 @@ import com.neekly_report.whirlwind.dto.TodoDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.entity.Todo;
 import com.neekly_report.whirlwind.entity.User;
+import com.neekly_report.whirlwind.exception.NoDateTimeFormatException;
 import com.neekly_report.whirlwind.repository.ScheduleRepository;
 import com.neekly_report.whirlwind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,39 +28,72 @@ import java.util.List;
 public class ExtractionService {
 
     private final OllamaService ollamaService;
+    private final DucklingService ducklingService;
     private final ObjectMapper objectMapper;
 
     // Repositories
     private final UserRepository userRepository;
     private final ScheduleRepository scheduleRepository;
 
+    /*
+        사용자 입력 텍스트
+           ↓
+        DucklingService.extractDateTime → 시간 정보 추출
+           ↓
+        createScheduleCandidatesFromDuckling → Schedule 후보 생성
+           ↓
+        enrichScheduleWithOllama → 제목/내용 보완
+           ↓
+        List<Schedule> 완성
+           ↓
+        ParsedExtractionData → 일정 리스트 + 원본 JSON
+           ↓
+        ExtractionResult → CalendarEvent 리스트로 변환 후 반환
+     */
+
     /**
      * 텍스트에서 일정/할일 추출
      */
-    public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(
-            String chat, String userId) {
-
+    public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(String chat, String userId) {
         long startTime = System.currentTimeMillis();
-
         try {
-            ExtractionDto.Response.ParsedExtractionData extractJson = extractScheduleJson(chat, userId);
-
-            // 3. 데이터베이스 저장
+            // 사용자 조회
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
-            List<ScheduleDto.Response.CalendarEvent> savedEvents =
-                    saveSchedules(extractJson.getSchedules(), user);
+            // Duckling 기반 시간 추출
+            List<DucklingService.DateTimeInfo> dateTimes = ducklingService.extractDateTime(chat, "ko");
+            List<Schedule> schedules;
+
+            if (!dateTimes.isEmpty()) {
+                // Duckling 기반 일정 후보 생성
+                schedules = createScheduleCandidatesFromDuckling(chat, dateTimes);
+
+                // Ollama로 제목/내용 보완
+                for (Schedule schedule : schedules) {
+                    enrichScheduleWithOllama(schedule);
+                    schedule.setUser(user);
+                    schedule.setSource("TEXT");
+                }
+            } else {
+                // Duckling 실패 시 Ollama 단독 추출 fallback
+                String structuredData = ollamaService.extractStructuredScheduleData(chat, LocalDateTime.now().toString());
+                ExtractionDto.Response.ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
+                schedules = parsedData.getSchedules();
+                for (Schedule schedule : schedules) {
+                    schedule.setUser(user);
+                    schedule.setSource("TEXT");
+                }
+            }
+
+            // 일정 저장
+            List<ScheduleDto.Response.CalendarEvent> savedEvents = saveSchedules(schedules, user);
 
             long processingTime = System.currentTimeMillis() - startTime;
-
-            log.info("텍스트 추출 완료 - 일정: {}개, 처리시간: {}ms",
-                    savedEvents.size(), processingTime);
-
             return ExtractionDto.Response.ExtractionResult.builder()
                     .schedules(savedEvents)
                     .originalText(chat)
-                    .processedText(extractJson.getStructuredData())
+                    .processedText("DUCKLING+OLLAMA")
                     .sourceType("TEXT")
                     .processingTimeMs(processingTime)
                     .success(true)
@@ -69,7 +103,6 @@ public class ExtractionService {
         } catch (Exception e) {
             long processingTime = System.currentTimeMillis() - startTime;
             log.error("텍스트 추출 실패: {}", e.getMessage(), e);
-
             return ExtractionDto.Response.ExtractionResult.builder()
                     .originalText(chat)
                     .sourceType("TEXT")
@@ -80,15 +113,91 @@ public class ExtractionService {
         }
     }
 
+
     public ExtractionDto.Response.ParsedExtractionData extractScheduleJson(String chat, String userId) {
         log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
 
         // 1. Ollama로 구조화된 데이터 추출
-        String structuredData = ollamaService.extractStructuredScheduleData(chat, LocalDateTime.now().toString());
-
+        String structuredData;
+        if (ducklingService.hasValidDateTime(chat, "ko")) {
+            // Duckling 결과를 기반으로 간단한 일정 JSON 생성 (임시)
+            structuredData = ducklingToSimpleJson(chat, ducklingService.extractDateTime(chat, "ko"));
+        } else {
+            throw new NoDateTimeFormatException("유효한 일시를 포함해주세요.");
+        }
         // 2. JSON 파싱 및 엔터티 생성
         return parseStructuredData(structuredData, chat);
     }
+
+    private String ducklingToSimpleJson(String rawText, List<DucklingService.DateTimeInfo> dateTimes) {
+        if (dateTimes.isEmpty()) return "{}";
+        DucklingService.DateTimeInfo dt = dateTimes.getFirst(); // 첫 번째만 사용 (단계적 고도화)
+        return """
+                {
+                  "schedules": [
+                    {
+                      "title": "추출된 일정",
+                      "content": "",
+                      "startTime": "%s",
+                      "endTime": "%s",
+                      "rawText": "%s",
+                      "source": "DUCKLING"
+                    }
+                  ]
+                }
+                """.formatted(dt.getStart(), dt.getEnd(), rawText);
+    }
+
+    private List<Schedule> createScheduleCandidatesFromDuckling(String rawText, List<DucklingService.DateTimeInfo> dateTimes) {
+        List<Schedule> schedules = new ArrayList<>();
+        for (DucklingService.DateTimeInfo dt : dateTimes) {
+            Schedule schedule = Schedule.builder()
+                    .title("시간 기반 일정")
+                    .content("")
+                    .startTime(dt.getStart())
+                    .endTime(dt.getEnd())
+                    .rawText(rawText)
+                    .source("DUCKLING")
+                    .build();
+            schedules.add(schedule);
+        }
+        return schedules;
+    }
+
+    private void enrichScheduleWithOllama(Schedule schedule) {
+        String prompt = """
+    다음 일정 후보에 대해 제목과 내용을 보완해주세요.
+    입력:
+    - 시작: %s
+    - 종료: %s
+    - 원문: %s
+
+    출력 형식:
+    {
+      "title": "회의",
+      "content": "팀 회의 진행"
+    }
+    """.formatted(
+                schedule.getStartTime().toString(),
+                schedule.getEndTime().toString(),
+                schedule.getRawText()
+        );
+
+        try {
+            String response = ollamaService.generateResponse(prompt);
+            JsonNode jsonNode = objectMapper.readTree(response);
+            if (jsonNode.has("title")) {
+                schedule.setTitle(jsonNode.get("title").asText());
+            }
+            if (jsonNode.has("content")) {
+                schedule.setContent(jsonNode.get("content").asText());
+            }
+        } catch (Exception e) {
+            log.warn("Ollama 일정 보완 실패: {}", e.getMessage());
+        }
+    }
+
+
 
     /**
      * 이메일에서 일정/할일 추출
