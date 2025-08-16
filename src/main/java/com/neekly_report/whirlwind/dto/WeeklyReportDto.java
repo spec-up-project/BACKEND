@@ -72,7 +72,7 @@ public class WeeklyReportDto {
             private String reportPeriod; // "2024-08-01 ~ 2024-08-07"
 
             private WeeklySummary summary;
-            private List<CalendarDto.Response.CalendarEvent> upcomingEvents;
+            private List<ScheduleDto.Response.CalendarEvent> upcomingEvents;
             private List<TodoDto.Response.TodoItem> pendingTodos;
             private List<TodoDto.Response.TodoItem> completedTodos;
             private String reportContent;

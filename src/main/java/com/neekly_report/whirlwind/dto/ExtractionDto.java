@@ -64,7 +64,7 @@ public class ExtractionDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class ExtractionResult {
-            private List<CalendarDto.Response.CalendarEvent> schedules;
+            private List<ScheduleDto.Response.CalendarEvent> schedules;
             private String originalText;
             private String processedText;
             private String sourceType;
@@ -80,7 +80,7 @@ public class ExtractionDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class ExtractionPreview {
-            private List<CalendarDto.Response.CalendarEventPreview> events;
+            private List<ScheduleDto.Response.CalendarEventPreview> events;
             private List<TodoDto.Response.TodoItemPreview> todos;
             private String originalText;
             private String processedText;

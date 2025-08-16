@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.entity;
 
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -49,5 +50,29 @@ public class Schedule extends Common {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
+
+    public ScheduleDto.Response.CalendarEvent toCalendarEvent() {
+        return ScheduleDto.Response.CalendarEvent.builder()
+                .scheduleId(getScheduleUid())
+                .title(getTitle())
+                .content(getContent())
+                .startTime(getStartTime())
+                .endTime(getEndTime())
+                .source(getSource())
+                .rawText(getRawText())
+                .createDate(getCreateDate())
+                .modifyDate(getModifyDate())
+                .build();
+    }
+
+    public ScheduleDto.Response.CalendarEventPreview toEventPreview() {
+        return ScheduleDto.Response.CalendarEventPreview.builder()
+                .title(getTitle())
+                .content(getContent())
+                .startTime(getStartTime())
+                .endTime(getEndTime())
+                .rawText(getRawText())
+                .build();
+    }
 }
 

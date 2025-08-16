@@ -1,7 +1,7 @@
 package com.neekly_report.whirlwind.service;
 
-import com.neekly_report.whirlwind.dto.CalendarDto;
-import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
+import com.neekly_report.whirlwind.dto.ScheduleDto.Response.CalendarEvent;
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.mapper.CalendarMapper;
 import com.neekly_report.whirlwind.repository.ScheduleRepository;
@@ -21,20 +21,19 @@ import java.util.List;
 public class CalendarService {
 
     private final ScheduleRepository scheduleRepository;
-    private final CalendarMapper calendarMapper;
 
     /**
      * 사용자의 모든 일정 조회
      */
-    public List<CalendarDto.Response.CalendarEvent> getUserEvents(String userId) {
+    public List<CalendarEvent> getUserEvents(String userId) {
         log.info("사용자 일정 조회 - 사용자ID: {}", userId);
 
         List<Schedule> schedules = scheduleRepository.findByUser_userUid(userId);
 
         return schedules.stream()
-                .map(calendarMapper::toCalendarEvent)
+                .map(Schedule::toCalendarEvent)
                 .sorted(Comparator.comparing(
-                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        ScheduleDto.Response.CalendarEvent::getStartTime,
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
                 .toList();
@@ -43,7 +42,7 @@ public class CalendarService {
     /**
      * 기간별 일정 조회
      */
-    public List<CalendarDto.Response.CalendarEvent> getEventsByDateRange(
+    public List<CalendarEvent> getEventsByDateRange(
             String userId, LocalDateTime startDate, LocalDateTime endDate) {
 
         log.info("기간별 일정 조회 - 사용자ID: {}, 기간: {} ~ {}", userId, startDate, endDate);
@@ -52,9 +51,9 @@ public class CalendarService {
                 userId, startDate, endDate);
 
         return schedules.stream()
-                .map(calendarMapper::toCalendarEvent)
+                .map(Schedule::toCalendarEvent)
                 .sorted(Comparator.comparing(
-                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        ScheduleDto.Response.CalendarEvent::getStartTime,
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
                 .toList();
@@ -63,16 +62,16 @@ public class CalendarService {
     /**
      * 키워드로 일정 검색
      */
-    public List<CalendarDto.Response.CalendarEvent> searchEvents(String userId, String keyword) {
+    public List<CalendarEvent> searchEvents(String userId, String keyword) {
         log.info("일정 검색 - 사용자ID: {}, 키워드: {}", userId, keyword);
 
         List<Schedule> schedules = scheduleRepository.findByUser_userUidAndTitleContainingOrContentContaining(
                 userId, keyword, keyword);
 
         return schedules.stream()
-                .map(calendarMapper::toCalendarEvent)
+                .map(Schedule::toCalendarEvent)
                 .sorted(Comparator.comparing(
-                        CalendarDto.Response.CalendarEvent::getStartTime,
+                        ScheduleDto.Response.CalendarEvent::getStartTime,
                         Comparator.nullsLast(Comparator.naturalOrder())
                 ))
                 .toList();
@@ -81,7 +80,7 @@ public class CalendarService {
     /**
      * 오늘의 일정 조회
      */
-    public List<CalendarDto.Response.CalendarEvent> getTodayEvents(String userId) {
+    public List<CalendarEvent> getTodayEvents(String userId) {
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
 
@@ -91,7 +90,7 @@ public class CalendarService {
     /**
      * 이번 주 일정 조회
      */
-    public List<CalendarDto.Response.CalendarEvent> getThisWeekEvents(String userId) {
+    public List<CalendarEvent> getThisWeekEvents(String userId) {
         LocalDateTime startOfWeek = LocalDateTime.now().minusDays(LocalDateTime.now().getDayOfWeek().getValue() - 1)
                 .withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
@@ -102,7 +101,7 @@ public class CalendarService {
     /**
      * 다가오는 일정 조회 (다음 7일)
      */
-    public List<CalendarDto.Response.CalendarEvent> getUpcomingEvents(String userId) {
+    public List<CalendarEvent> getUpcomingEvents(String userId) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime weekLater = now.plusDays(7);
 

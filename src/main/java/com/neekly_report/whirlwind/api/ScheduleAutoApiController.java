@@ -6,6 +6,7 @@ import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.ExtractionService;
 import com.neekly_report.whirlwind.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,18 +15,18 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Tag(name = "자동 일정 API", description = "LLM을 통한 자동 일정 조회 및 관리")
 @RestController
-@RequestMapping("/api/schedule")
+@RequestMapping("/api/schedule/auto")
 @RequiredArgsConstructor
 @Slf4j
-public class ScheduleApiController {
+public class ScheduleAutoApiController {
 
     private final ScheduleService scheduleService;
     private final ExtractionService extractionService;
 
-    @Operation(summary = "캘린더 자동 일정 Duckling 시간 추출 저장 ")
+    @Operation(summary = "캘린더 자동 일정 시간 추출 저장 ")
     @PostMapping
     public ResponseEntity<ExtractionDto.Response.ExtractionResult> createScheduleAuto(
             @RequestBody ScheduleDto.Request.ScheduleCreateRequest request,

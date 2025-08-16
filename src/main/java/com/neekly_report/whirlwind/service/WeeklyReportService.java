@@ -1,7 +1,6 @@
 package com.neekly_report.whirlwind.service;
 
-import com.neekly_report.whirlwind.dto.CalendarDto;
-import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
+import com.neekly_report.whirlwind.dto.ScheduleDto.Response.CalendarEvent;
 import com.neekly_report.whirlwind.dto.ExtractionDto;
 import com.neekly_report.whirlwind.dto.WeeklyReportDto;
 import com.neekly_report.whirlwind.dto.WeeklyReportDto.Response.WeeklySummary;
@@ -53,10 +52,10 @@ public class WeeklyReportService {
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
         // 데이터 수집
-        List<CalendarDto.Response.CalendarEvent> weekEvents =
+        List<CalendarEvent> weekEvents =
                 calendarService.getEventsByDateRange(userUid, startOfWeek, endOfWeek);
 
-        List<CalendarDto.Response.CalendarEvent> upcomingEvents =
+        List<CalendarEvent> upcomingEvents =
                 calendarService.getUpcomingEvents(userUid);
 
         // 통계 계산
@@ -156,10 +155,10 @@ public class WeeklyReportService {
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
         // 데이터 수집
-        List<CalendarDto.Response.CalendarEvent> weekEvents =
+        List<CalendarEvent> weekEvents =
                 calendarService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
 
-        List<CalendarDto.Response.CalendarEvent> upcomingEvents =
+        List<CalendarEvent> upcomingEvents =
                 calendarService.getUpcomingEvents(userId);
 
         // 통계 계산
@@ -214,7 +213,7 @@ public class WeeklyReportService {
     }
 
     private WeeklyReportDto.Response.WeeklySummary calculateWeeklySummary(
-            List<CalendarDto.Response.CalendarEvent> events) {
+            List<CalendarEvent> events) {
 
         int totalEvents = events.size();
 
@@ -233,7 +232,7 @@ public class WeeklyReportService {
     }
 
     private String generateMarkdownReport(String userId,
-                                          List<CalendarDto.Response.CalendarEvent> events,
+                                          List<CalendarEvent> events,
                                           WeeklyReportDto.Response.WeeklySummary summary) {
 
         StringBuilder scheduleData = new StringBuilder();

@@ -2,8 +2,8 @@ package com.neekly_report.whirlwind.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.neekly_report.whirlwind.dto.CalendarDto;
 import com.neekly_report.whirlwind.dto.ExtractionDto;
+import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.dto.TodoDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.entity.Todo;
@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -65,7 +64,7 @@ public class ExtractionService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
-            List<CalendarDto.Response.CalendarEvent> savedEvents =
+            List<ScheduleDto.Response.CalendarEvent> savedEvents =
                     saveSchedules(parsedData.schedules, user, "TEXT");
 
             long processingTime = System.currentTimeMillis() - startTime;
@@ -162,7 +161,7 @@ public class ExtractionService {
             mergeDucklingTimeInfo(parsedData, dateTimeInfos);
 
             // DTO 변환 (저장하지 않고 미리보기용)
-            List<CalendarDto.Response.CalendarEventPreview> eventPreviews =
+            List<ScheduleDto.Response.CalendarEventPreview> eventPreviews =
                     parsedData.schedules.stream()
                             .map(this::toEventPreview)
                             .toList();
@@ -303,8 +302,8 @@ public class ExtractionService {
     /**
      * 일정 저장
      */
-    private List<CalendarDto.Response.CalendarEvent> saveSchedules(List<Schedule> schedules, User user, String source) {
-        List<CalendarDto.Response.CalendarEvent> result = new ArrayList<>();
+    private List<ScheduleDto.Response.CalendarEvent> saveSchedules(List<Schedule> schedules, User user, String source) {
+        List<ScheduleDto.Response.CalendarEvent> result = new ArrayList<>();
         log.info("call save schedules: {}, {}, {}", schedules.size(), user.getUserUid(), source);
 
         for (Schedule schedule : schedules) {
@@ -335,8 +334,8 @@ public class ExtractionService {
     }
 
     // DTO 변환 메서드들
-    private CalendarDto.Response.CalendarEvent toCalendarEvent(Schedule schedule) {
-        return CalendarDto.Response.CalendarEvent.builder()
+    private ScheduleDto.Response.CalendarEvent toCalendarEvent(Schedule schedule) {
+        return ScheduleDto.Response.CalendarEvent.builder()
                 .scheduleId(schedule.getScheduleUid())
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
@@ -349,8 +348,8 @@ public class ExtractionService {
                 .build();
     }
 
-    private CalendarDto.Response.CalendarEventPreview toEventPreview(Schedule schedule) {
-        return CalendarDto.Response.CalendarEventPreview.builder()
+    private ScheduleDto.Response.CalendarEventPreview toEventPreview(Schedule schedule) {
+        return ScheduleDto.Response.CalendarEventPreview.builder()
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
                 .startTime(schedule.getStartTime())
