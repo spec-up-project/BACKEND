@@ -13,6 +13,7 @@ public class CalendarDto {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
+        @ToString(exclude = {"scheduleId", "rawText"})
         public static class CalendarEvent {
             private String scheduleId;
             private String title;
@@ -27,6 +28,9 @@ public class CalendarDto {
             private Boolean isAllDay;
             private String source;
             private String rawText;
+
+            private String mainCategory;
+            private String subCategory;
 
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             private LocalDateTime createDate;

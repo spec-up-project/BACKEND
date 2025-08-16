@@ -27,3 +27,7 @@ Authorization: Bearer {{accessToken}}
   "rawText": "",
   "source": ""
 }
+
+###
+GET http://localhost:8081/api/report?
+    userId=38f54d40-1b13-4654-b739-dfdf6a708375

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neekly_report.whirlwind.dto.CalendarDto;
 import com.neekly_report.whirlwind.dto.ExtractionDto;
-import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.dto.TodoDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import com.neekly_report.whirlwind.entity.Todo;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -38,33 +38,35 @@ public class ExtractionService {
     /**
      * 텍스트에서 일정/할일 추출
      */
-    public ExtractionDto.Response.ExtractionResult extractFromText(
-            ExtractionDto.Request.TextExtractionRequest request, String userId) {
+    public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(
+            String chat, String userId) {
 
         long startTime = System.currentTimeMillis();
 
         try {
-            log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, request.getText().length());
+            log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
 
             // 1. Duckling으로 날짜/시간 정보 추출
-            List<DucklingService.DateTimeInfo> dateTimeInfos =
-                    ducklingService.extractDateTime(request.getText(), "ko");
+//            List<DucklingService.DateTimeInfo> dateTimeInfos =
+//                    ducklingService.extractDateTime(chat, "ko");
+//
+//            log.info("extract datetime: {}", dateTimeInfos.toString());
 
             // 2. Ollama로 구조화된 데이터 추출
-            String structuredData = ollamaService.extractStructuredData(request.getText());
+            String structuredData = ollamaService.extractStructuredData(chat, LocalDateTime.now().toString());
 
             // 3. JSON 파싱 및 엔터티 생성
-            ParsedExtractionData parsedData = parseStructuredData(structuredData, request.getText());
+            ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
 
             // 4. Duckling 정보와 병합
-            mergeDucklingTimeInfo(parsedData, dateTimeInfos);
+//            mergeDucklingTimeInfo(parsedData, dateTimeInfos);
 
             // 5. 데이터베이스 저장
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
             List<CalendarDto.Response.CalendarEvent> savedEvents =
-                    saveSchedules(parsedData.schedules, user, request.getSourceType());
+                    saveSchedules(parsedData.schedules, user, "TEXT");
 
             long processingTime = System.currentTimeMillis() - startTime;
 
@@ -72,10 +74,10 @@ public class ExtractionService {
                     savedEvents.size(), processingTime);
 
             return ExtractionDto.Response.ExtractionResult.builder()
-                    .events(savedEvents)
-                    .originalText(request.getText())
+                    .schedules(savedEvents)
+                    .originalText(chat)
                     .processedText(structuredData)
-                    .sourceType(request.getSourceType())
+                    .sourceType("TEXT")
                     .processingTimeMs(processingTime)
                     .success(true)
                     .savedEventsCount(savedEvents.size())
@@ -86,8 +88,8 @@ public class ExtractionService {
             log.error("텍스트 추출 실패: {}", e.getMessage(), e);
 
             return ExtractionDto.Response.ExtractionResult.builder()
-                    .originalText(request.getText())
-                    .sourceType(request.getSourceType())
+                    .originalText(chat)
+                    .sourceType("TEXT")
                     .processingTimeMs(processingTime)
                     .success(false)
                     .errorMessage(e.getMessage())
@@ -117,7 +119,7 @@ public class ExtractionService {
                             .sourceType("EMAIL")
                             .build();
 
-            ExtractionDto.Response.ExtractionResult result = extractFromText(textRequest, userId);
+            ExtractionDto.Response.ExtractionResult result = extractDatetimeFromText(textRequest.getText(), userId);
 
             // 3. 이메일 관련 정보 추가
             result.setOriginalText(emailContent);
@@ -149,7 +151,7 @@ public class ExtractionService {
 
         try {
             // Ollama로 구조화된 데이터 추출
-            String structuredData = ollamaService.extractStructuredData(request.getText());
+            String structuredData = ollamaService.extractStructuredData(request.getText(), LocalDateTime.now().toString());
 
             // JSON 파싱
             ParsedExtractionData parsedData = parseStructuredData(structuredData, request.getText());
@@ -165,16 +167,10 @@ public class ExtractionService {
                             .map(this::toEventPreview)
                             .toList();
 
-            List<TodoDto.Response.TodoItemPreview> todoPreviews =
-                    parsedData.todos.stream()
-                            .map(this::toTodoPreview)
-                            .toList();
-
             long processingTime = System.currentTimeMillis() - startTime;
 
             return ExtractionDto.Response.ExtractionPreview.builder()
                     .events(eventPreviews)
-                    .todos(todoPreviews)
                     .originalText(request.getText())
                     .processedText(structuredData)
                     .processingTimeMs(processingTime)
@@ -195,17 +191,19 @@ public class ExtractionService {
     /**
      * 구조화된 데이터 파싱
      */
+
     private ParsedExtractionData parseStructuredData(String structuredData, String rawText) {
         List<Schedule> schedules = new ArrayList<>();
-        List<Todo> todos = new ArrayList<>();
 
         try {
-            JsonNode rootNode = objectMapper.readTree(structuredData);
+            // 백틱 제거 및 JSON 블록 추출
+            String cleanedJson = extractJsonBlock(structuredData);
 
-            // 일정 파싱
-            if (rootNode.has("events")) {
-                JsonNode eventsNode = rootNode.get("events");
-                for (JsonNode eventNode : eventsNode) {
+            JsonNode rootNode = objectMapper.readTree(cleanedJson);
+
+            if (rootNode.has("schedules") && !rootNode.get("schedules").isNull()) {
+                JsonNode scheduleNode = rootNode.get("schedules");
+                for (JsonNode eventNode : scheduleNode) {
                     Schedule schedule = parseScheduleFromJson(eventNode, rawText);
                     if (schedule != null) {
                         schedules.add(schedule);
@@ -213,67 +211,28 @@ public class ExtractionService {
                 }
             }
 
-            // 할일 파싱
-            if (rootNode.has("todos")) {
-                JsonNode todosNode = rootNode.get("todos");
-                for (JsonNode todoNode : todosNode) {
-                    Todo todo = parseTodoFromJson(todoNode, rawText);
-                    if (todo != null) {
-                        todos.add(todo);
-                    }
-                }
-            }
-
         } catch (Exception e) {
             log.warn("JSON 파싱 실패, fallback 처리: {}", e.getMessage());
-
-            // Fallback: 기본 할일로 등록
-            Todo fallbackTodo = Todo.builder()
-                    .title("텍스트 검토 필요")
-                    .description(rawText)
-                    .priority("MEDIUM")
-                    .status("TODO")
-                    .rawText(rawText)
-                    .build();
-            todos.add(fallbackTodo);
         }
 
-        return new ParsedExtractionData(schedules, todos);
+        return new ParsedExtractionData(schedules);
     }
 
-    /**
-     * JSON에서 일정 파싱
-     */
-    private Schedule parseScheduleFromJson(JsonNode eventNode, String rawText) {
+    private Schedule parseScheduleFromJson(JsonNode node, String rawText) {
         try {
-            String title = eventNode.has("title") ? eventNode.get("title").asText() : "새 일정";
-            String description = eventNode.has("description") ? eventNode.get("description").asText() : "";
-
-            LocalDateTime startTime = null;
-            LocalDateTime endTime = null;
-
-            if (eventNode.has("startTime") && !eventNode.get("startTime").isNull()) {
-                startTime = parseDateTime(eventNode.get("startTime").asText());
-            }
-
-            if (eventNode.has("endTime") && !eventNode.get("endTime").isNull()) {
-                endTime = parseDateTime(eventNode.get("endTime").asText());
-            }
-
-            // 기본값 설정
-            if (startTime == null) {
-                startTime = LocalDateTime.now().plusHours(1).withMinute(0).withSecond(0);
-            }
-            if (endTime == null) {
-                endTime = startTime.plusHours(1);
-            }
+            String title = node.has("title") ? node.get("title").asText() : "제목 없음";
+            String content = node.has("content") ? node.get("content").asText() : "";
+            LocalDateTime startTime = node.has("startTime") ? LocalDateTime.parse(node.get("startTime").asText()) : null;
+            LocalDateTime endTime = node.has("endTime") ? LocalDateTime.parse(node.get("endTime").asText()) : null;
+            String source = node.has("source") ? node.get("source").asText() : "TEXT";
 
             return Schedule.builder()
                     .title(title)
-                    .content(description.isEmpty() ? title : description)
+                    .content(content)
                     .startTime(startTime)
                     .endTime(endTime)
                     .rawText(rawText)
+                    .source(source)
                     .build();
 
         } catch (Exception e) {
@@ -281,6 +240,19 @@ public class ExtractionService {
             return null;
         }
     }
+
+
+    private String extractJsonBlock(String response) {
+        // 백틱 제거 및 JSON 블록만 추출
+        if (response.startsWith("```json")) {
+            response = response.replaceFirst("```json", "").trim();
+        }
+        if (response.endsWith("```")) {
+            response = response.substring(0, response.lastIndexOf("```")).trim();
+        }
+        return response;
+    }
+
 
     /**
      * JSON에서 할일 파싱
@@ -333,11 +305,13 @@ public class ExtractionService {
      */
     private List<CalendarDto.Response.CalendarEvent> saveSchedules(List<Schedule> schedules, User user, String source) {
         List<CalendarDto.Response.CalendarEvent> result = new ArrayList<>();
+        log.info("call save schedules: {}, {}, {}", schedules.size(), user.getUserUid(), source);
 
         for (Schedule schedule : schedules) {
             schedule.setUser(user);
             schedule.setSource(source);
             Schedule saved = scheduleRepository.save(schedule);
+            log.info("saved schedule: {}, {}, {}", saved.getScheduleUid(), user.getUserUid(), source);
             result.add(toCalendarEvent(saved));
         }
 
@@ -395,47 +369,15 @@ public class ExtractionService {
                 .build();
     }
 
-    public List<ScheduleDto.Request.ScheduleCreateRequest> extractSchedulesFromText(String text, String source) {
-        List<ScheduleDto.Request.ScheduleCreateRequest> schedules = new ArrayList<>();
-        String[] lines = text.split("\\r?\\n");
-        for (String line : lines) {
-            if (line.trim().isEmpty()) continue;
-            try {
-                List<DucklingService.DateTimeInfo> dateTimeInfos = ducklingService.extractDateTime(line, "ko");
-                if (!dateTimeInfos.isEmpty()) {
-                    DucklingService.DateTimeInfo info = dateTimeInfos.get(0);
-                    String title = line.replace(info.getText(), "").trim();
-                    if (title.isEmpty()) title = "새 일정";
-
-                    ScheduleDto.Request.ScheduleCreateRequest schedule = ScheduleDto.Request.ScheduleCreateRequest.builder()
-                            .title(title)
-                            .content("자동 생성된 일정: " + title)
-                            .startTime(info.getStart())
-                            .endTime(info.getEnd())
-                            .rawText(line)
-                            .source(source)
-                            .build();
-
-                    schedules.add(schedule);
-                }
-            } catch (Exception e) {
-                log.warn("일정 추출 중 오류 발생: {}", e.getMessage());
-            }
-        }
-        return schedules;
-    }
-
 
     /**
      * 파싱된 추출 데이터 내부 클래스
      */
     private static class ParsedExtractionData {
         final List<Schedule> schedules;
-        final List<Todo> todos;
 
-        ParsedExtractionData(List<Schedule> schedules, List<Todo> todos) {
+        ParsedExtractionData(List<Schedule> schedules) {
             this.schedules = schedules;
-            this.todos = todos;
         }
     }
 }

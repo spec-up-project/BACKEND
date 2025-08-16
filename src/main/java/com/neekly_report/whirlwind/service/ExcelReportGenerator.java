@@ -1,7 +1,7 @@
 package com.neekly_report.whirlwind.service;
 
 import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
-import com.neekly_report.whirlwind.dto.ReportDto.Response.WeeklySummary;
+import com.neekly_report.whirlwind.dto.WeeklyReportDto.Response.WeeklySummary;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;

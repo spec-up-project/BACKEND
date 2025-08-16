@@ -28,11 +28,16 @@ Authorization: Bearer {{accessToken}}
   "source": ""
 }
 
-### 사용자별 캘린더 조회
+### 내 스케줄 전체 조회
 GET http://localhost:8081/api/schedule
+Authorization: Bearer {{accessToken}}
+
+### 사용자별 캘린더 자동 생성
+POST http://localhost:8081/api/schedule
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
+  "rawText": "오늘 오후 10시에는 hope 회의가 있고, 내일 오전 9시부터 클라우드 Assessment 회의가 있어. 수요일 오후 2시에는 보안 정책 검토 회의가 있고, 목요일 오전 11시에는 신규 서비스 런칭 관련 회의가 있어. 금요일 오후 4시에는 팀 회고 미팅이 예정되어 있어."
 
 }

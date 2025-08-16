@@ -7,3 +7,12 @@ Authorization: Bearer {{accessToken}}
 GET http://localhost:8081/api/team-report/weekly/excel?
     userId=38f54d40-1b13-4654-b739-dfdf6a708375
 Authorization: Bearer {{accessToken}}
+
+### 주간보고 생성 확인
+GET http://localhost:8081/api/report
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "chat": "나는 오늘 plms 회의를 오후3시에 진행할게용"
+}

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neekly_report.whirlwind.dto.OllamaDto.OllamaRequest;
 import com.neekly_report.whirlwind.dto.OllamaDto.OllamaResponse;
+import com.neekly_report.whirlwind.dto.WeeklyReportDto;
 import io.netty.handler.timeout.ReadTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,9 @@ public class OllamaService {
 
     @Value("${app.ollama.text-model}")
     private String textModel;
+
+    @Value("${app.ollama.timeout-seconds}")
+    private int timeoutSeconds;
 
     public String getOllamaResponse(String prompt, String modelCtg) {
         // 요청 객체 생성
@@ -82,7 +86,7 @@ public class OllamaService {
                     )), Map.class)
                     .retrieve()
                     .bodyToMono(String.class)
-                    .timeout(Duration.ofSeconds(90))
+                    .timeout(Duration.ofSeconds(timeoutSeconds))
                     .block();
 
             if (response != null) {
@@ -103,34 +107,41 @@ public class OllamaService {
     /**
      * 텍스트에서 일정과 할일을 구조화된 데이터로 추출
      */
-    public String extractStructuredData(String text) {
+    public String extractStructuredData(String text, String todaysDateStr) {
         String prompt = """
-            다음 텍스트에서 일정(이벤트)를 추출하여 JSON 형태로 반환해주세요.
-            
-            규칙:
-            1. 날짜와 시간이 명시된 것은 일정(events)로 분류
-            2. 우선순위는 텍스트의 긴급성을 고려해 LOW, MEDIUM, HIGH, URGENT 중 하나로 설정
-            3. 날짜/시간 정보가 불명확하면 현재 시점 기준으로 합리적 추정
-            4. 응답은 반드시 valid JSON 형식이어야 함
-            
-            형식:
+        다음 텍스트에서 일정(Schedule)을 추출하여 JSON 형태로 반환해주세요.
+
+        규칙:
+        1. 날짜와 시간이 명시된 것은 일정(Schedule)로 분류
+        2. 일정은 다음 필드로 구성됩니다:
+           - title: 일정 제목
+           - content: 상세 설명
+           - startTime: 시작 시간 (예: 2025-01-01T10:00:00)
+           - endTime: 종료 시간 (예: 2025-01-01T11:00:00)
+           - rawText: 원본 입력 텍스트
+           - source: 입력 소스 (예: TEXT, FILE 등)
+        3. 날짜/시간 정보가 불명확하면 현재 시점 기준으로 합리적 추정
+        4. 오늘 날짜와 시간은 다음과 같다. %s
+        5. 응답은 반드시 valid JSON 형식이어야 함
+
+        형식:
+        {
+          "schedules": [
             {
-              "events": [
-                {
-                  "title": "이벤트 제목",
-                  "description": "상세 설명",
-                  "startTime": "2024-01-01T10:00:00",
-                  "endTime": "2024-01-01T11:00:00",
-                  "isAllDay": false,
-                  "priority": "MEDIUM"
-                }
-              ]
+              "title": "일정 제목",
+              "content": "상세 설명",
+              "startTime": "2025-01-01T10:00:00",
+              "endTime": "2025-01-01T11:00:00",
+              "rawText": "원본 텍스트",
+              "source": "TEXT"
             }
-            
-            텍스트: %s
-            
-            JSON으로만 응답해주세요:
-            """.formatted(text);
+          ]
+        }
+
+        텍스트: %s
+
+        JSON 으로만 응답해주세요:
+        """.formatted(todaysDateStr, text);
 
         return generateResponse(prompt);
     }
@@ -170,7 +181,29 @@ public class OllamaService {
     /**
      * 주간 리포트 생성
      */
-    public String generateWeeklyReport(String scheduleData, String completionStats) {
+    public String generateWeeklyReport(WeeklyReportDto.Request.WeeklyReportRequest request) {
+        String prompt = """
+            다음 데이터와 포맷 예시를 바탕으로 주간 리포트를 텍스트 형식으로 생성해줘.
+            중간에 null로 보낸 데이터가 있으면 자리를 하나씩 당겨서 카테고리를 없애줘.
+           \s
+            완료 통계: %s
+           \s
+                ■ %s
+                  1. %s
+                     1) %s (%s)
+                    \s
+            형식으로 작성해.
+            일정 데이터: %s
+           \s""".formatted(request.getCompletionStats(),
+                request.getMainCategory(), request.getSubCategory(), request.getTitle(), request.getFinalDate(), request.getContent());
+
+        return generateResponse(prompt);
+    }
+
+    /**
+     * 주간 리포트 생성
+     */
+    public String generateMarkdownWeeklyReport(String scheduleData, String completionStats) {
         String prompt = """
             다음 데이터와 포맷을 바탕으로 주간 리포트를 Markdown 형식으로 생성해주세요.
             

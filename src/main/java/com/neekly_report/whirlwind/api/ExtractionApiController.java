@@ -43,7 +43,7 @@ public class ExtractionApiController {
                 userDetail.getUserUid(), request.getText().length());
 
         ExtractionDto.Response.ExtractionResult result =
-                extractionService.extractFromText(request, userDetail.getUserUid());
+                extractionService.extractDatetimeFromText(request.getText(), userDetail.getUserUid());
 
         return ResponseEntity.ok(ApiResponseDto.success(result, "텍스트 추출이 완료되었습니다."));
     }

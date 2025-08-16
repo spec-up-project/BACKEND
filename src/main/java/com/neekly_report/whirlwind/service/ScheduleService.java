@@ -23,30 +23,6 @@ public class ScheduleService {
     private final UserRepository userRepository;
     private final ScheduleMapper scheduleMapper;
 
-    public ScheduleDto.Response.ScheduleResponse createSchedule(String userUid, ScheduleDto.Request.ScheduleCreateRequest dto) {
-        User user = userRepository.findById(userUid)
-                .orElseThrow(() -> new RuntimeException("사용자 없음"));
-
-        List<DucklingService.DateTimeInfo> times = ducklingService.extractDateTime(dto.getRawText(), "ko_KR");
-
-        LocalDateTime start = dto.getStartTime();
-        LocalDateTime end = dto.getEndTime();
-
-        if (!times.isEmpty()) {
-            DucklingService.DateTimeInfo info = times.get(0);
-            start = info.getStart();
-            end = info.getEnd();
-        }
-
-        Schedule schedule = scheduleMapper.toEntity(dto);
-        schedule.setUser(user);
-        schedule.setStartTime(start);
-        schedule.setEndTime(end);
-
-        Schedule saved = scheduleRepository.save(schedule);
-        return scheduleMapper.toResponse(saved);
-    }
-
     public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String userUid) {
         return scheduleRepository.findByUser_userUid(userUid)
                 .stream()

@@ -6,8 +6,16 @@ import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ReportDto {
+public class WeeklyReportDto {
     public static class Request {
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class WeeklyReportPreview {
+
+            private String chat;
+        }
         @Data
         @Builder
         @NoArgsConstructor
@@ -16,6 +24,28 @@ public class ReportDto {
 
             private String title;
             private String content;
+        }
+        @Getter
+        @Setter
+        public static class SaveRequest {
+            private String userUid;
+            private String title;
+            private String content;
+            private String mainCategoryUid;
+            private String subCategoryUid;
+        }
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class WeeklyReportRequest {
+            private String userUid;
+            private String completionStats;
+            private String title;
+            private String mainCategory;
+            private String subCategory;
+            private String content;
+            private String finalDate; // "2024-08-01 ~ 2024-08-07"
         }
     }
 
@@ -45,7 +75,7 @@ public class ReportDto {
             private List<CalendarDto.Response.CalendarEvent> upcomingEvents;
             private List<TodoDto.Response.TodoItem> pendingTodos;
             private List<TodoDto.Response.TodoItem> completedTodos;
-            private String markdownContent; // 마크다운 형식의 리포트
+            private String reportContent;
         }
 
         @Data
@@ -90,6 +120,16 @@ public class ReportDto {
             private int averageProductivityScore;
             private String mostProductiveWeek;
             private String leastProductiveWeek;
+        }
+
+        @Getter
+        @Setter
+        public static class SaveResponse {
+            private String reportUid;
+            private String title;
+            private String content;
+            private String mainCategoryName;
+            private String subCategoryName;
         }
     }
 }

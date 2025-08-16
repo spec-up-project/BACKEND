@@ -1,5 +1,6 @@
 package com.neekly_report.whirlwind.api;
 
+import com.neekly_report.whirlwind.dto.ExtractionDto;
 import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.ExtractionService;
@@ -26,11 +27,11 @@ public class ScheduleApiController {
 
     @Operation(summary = "캘린더 자동 일정 Duckling 시간 추출 저장 ")
     @PostMapping
-    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> createSchedule(
-            @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
+    public ResponseEntity<ExtractionDto.Response.ExtractionResult> createScheduleAuto(
+            @RequestBody ScheduleDto.Request.ScheduleCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        ScheduleDto.Response.ScheduleResponse schedule = scheduleService.createSchedule(userDetail.getUserUid(), request);
+        ExtractionDto.Response.ExtractionResult schedule = extractionService.extractDatetimeFromText(request.getRawText(), userDetail.getUserUid());
         return ResponseEntity.ok(schedule);
     }
 
@@ -78,81 +79,6 @@ public class ScheduleApiController {
             @PathVariable String scheduleUid,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
         return ResponseEntity.ok(scheduleService.deleteSchedules(scheduleUid, userDetail.getUserUid()));
-    }
-
-    @PostMapping("/nlp/text")
-    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> extractFromText(
-            @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        List<ScheduleDto.Request.ScheduleCreateRequest> extracted =
-                extractionService.extractSchedulesFromText(request.getText(), "TEXT");
-
-        List<ScheduleDto.Response.ScheduleResponse> saved = extracted.stream()
-                .map(schedule -> scheduleService.createSchedule(userDetail.getUserUid(), schedule))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(saved);
-    }
-
-    @PostMapping("/nlp/preview")
-    public ResponseEntity<List<ScheduleDto.Response.ExtractedSchedulePreview>> previewExtractedSchedules(
-            @RequestBody @Valid ScheduleDto.Request.TextBasedScheduleRequest request) {
-
-        List<ScheduleDto.Request.ScheduleCreateRequest> extracted =
-                extractionService.extractSchedulesFromText(request.getText(), "TEXT");
-
-        List<ScheduleDto.Response.ExtractedSchedulePreview> preview = extracted.stream()
-                .map(schedule -> ScheduleDto.Response.ExtractedSchedulePreview.builder()
-                        .title(schedule.getTitle())
-                        .content(schedule.getContent())
-                        .startTime(schedule.getStartTime())
-                        .endTime(schedule.getEndTime())
-                        .rawText(schedule.getRawText())
-                        .build())
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(preview);
-    }
-
-    @PostMapping("/nlp/save-modified")
-    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> saveModifiedSchedule(
-            @RequestBody @Valid ScheduleDto.Request.ModifyExtractedScheduleRequest request,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        ScheduleDto.Request.ScheduleCreateRequest scheduleRequest = ScheduleDto.Request.ScheduleCreateRequest.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
-                .rawText(request.getRawText())
-                .source(request.getSource())
-                .build();
-
-        ScheduleDto.Response.ScheduleResponse saved = scheduleService.createSchedule(userDetail.getUserUid(), scheduleRequest);
-        return ResponseEntity.ok(saved);
-    }
-
-    @PostMapping("/nlp/save-batch")
-    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> saveBatchSchedules(
-            @RequestBody @Valid List<ScheduleDto.Request.ModifyExtractedScheduleRequest> requests,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        List<ScheduleDto.Response.ScheduleResponse> saved = requests.stream()
-                .map(request -> {
-                    ScheduleDto.Request.ScheduleCreateRequest scheduleRequest = ScheduleDto.Request.ScheduleCreateRequest.builder()
-                            .title(request.getTitle())
-                            .content(request.getContent())
-                            .startTime(request.getStartTime())
-                            .endTime(request.getEndTime())
-                            .rawText(request.getRawText())
-                            .source(request.getSource())
-                            .build();
-                    return scheduleService.createSchedule(userDetail.getUserUid(), scheduleRequest);
-                })
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(saved);
     }
 }
 

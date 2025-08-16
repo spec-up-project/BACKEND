@@ -13,13 +13,7 @@ public class ScheduleDto {
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
         public static class ScheduleCreateRequest {
-            private String title;
-            private String content;
-            private LocalDateTime startTime;
-            private LocalDateTime endTime;
             private String rawText;
-            private String source; // "TEXT", "FILE"
-            private User user;
         }
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
