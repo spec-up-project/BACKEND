@@ -64,12 +64,10 @@ public class WeeklyReportService {
         ExtractionDto.Response.ExtractionPreview extraction = extractionService.previewExtraction(new ExtractionDto.Request.TextExtractionRequest(chat, "TEXT"));
         String stats = String.format("완료율: %.1f%%, 생산성 점수: %d점",
                 summary.getCompletionRate(), summary.getProductivityScore());
-        CalendarEvent exampleEvent = weekEvents.getFirst();
 
-
-        String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(userUid, stats,
-                exampleEvent.getTitle(), exampleEvent.getMainCategory(), exampleEvent.getSubCategory(), extraction.getEvents().toString() + weekEvents.toString(),
-                exampleEvent.getCreateDate().format(DateTimeFormatter.ofPattern("MM/dd"))));
+        String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(
+                userUid, stats,extraction.getEvents().toString() + weekEvents
+                ));
 
         String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 + " ~ " + endOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -99,8 +97,8 @@ public class WeeklyReportService {
 
         WeeklyReport report = weeklyReportMapper.toEntity(request);
         report.setUser(user);
-        report.setMainCategory(mainCategory);
-        report.setSubCategory(subCategory);
+//        report.setMainCategory(mainCategory);
+//        report.setSubCategory(subCategory);
         report.setContent(generatedContent);
 
         weeklyReportRepository.save(report);
@@ -121,8 +119,8 @@ public class WeeklyReportService {
                 .orElseThrow(() -> new RuntimeException("대분류 없음"));
         Category subCategory = categoryRepository.findById(subCategoryUid)
                 .orElseThrow(() -> new RuntimeException("소분류 없음"));
-        report.setMainCategory(mainCategory);
-        report.setSubCategory(subCategory);
+//        report.setMainCategory(mainCategory);
+//        report.setSubCategory(subCategory);
         return weeklyReportMapper.toSaveResponse(report);
     }
 

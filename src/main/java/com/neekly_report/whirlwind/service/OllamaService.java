@@ -107,7 +107,7 @@ public class OllamaService {
     /**
      * 텍스트에서 일정과 할일을 구조화된 데이터로 추출
      */
-    public String extractStructuredData(String text, String todaysDateStr) {
+    public String extractStructuredScheduleData(String text, String todaysDateStr) {
         String prompt = """
         다음 텍스트에서 일정(Schedule)을 추출하여 JSON 형태로 반환해주세요.
 
@@ -188,14 +188,13 @@ public class OllamaService {
            \s
             완료 통계: %s
            \s
-                ■ %s
-                  1. %s
-                     1) %s (%s)
+                ■ 대분류명
+                  1. 중분류명
+                     1) 소분류명 Part : 제목 (종료 날짜)
                     \s
             형식으로 작성해.
             일정 데이터: %s
-           \s""".formatted(request.getCompletionStats(),
-                request.getMainCategory(), request.getSubCategory(), request.getTitle(), request.getFinalDate(), request.getContent());
+           \s""".formatted(request.getCompletionStats(), request.getContent());
 
         return generateResponse(prompt);
     }

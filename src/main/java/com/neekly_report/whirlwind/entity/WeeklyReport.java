@@ -29,11 +29,5 @@ public class WeeklyReport extends Common {
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MAIN_CATEGORY_UID")
-    private Category mainCategory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SUB_CATEGORY_UID")
-    private Category subCategory;
 }

@@ -80,7 +80,7 @@ public class ExtractionDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class ExtractionPreview {
-            private List<ScheduleDto.Response.CalendarEventPreview> events;
+            private List<ScheduleDto.Response.ScheduleEvent> events;
             private List<TodoDto.Response.TodoItemPreview> todos;
             private String originalText;
             private String processedText;
