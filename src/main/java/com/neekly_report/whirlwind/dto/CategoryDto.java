@@ -16,10 +16,10 @@ public class CategoryDto {
         @AllArgsConstructor
         @Builder
         public static class CategoryCreateRequest {
+            private String parentUid;
             @NotBlank(message = "Category name is required")
-            private String categoryName;
-
-            private String segType;
+            private String name;
+            private String depth;
         }
 
         @Getter
@@ -29,10 +29,11 @@ public class CategoryDto {
         @Builder
         public static class CategoryUpdateRequest {
 
+            private String parentUid;
             private String categoryUid;
             @NotBlank(message = "Category name is required")
-            private String categoryName;
-            private String segType;
+            private String name;
+            private String depth;
         }
     }
 
@@ -45,9 +46,10 @@ public class CategoryDto {
         @Builder
         public static class CategoryResponse {
 
+            private String parentUid;
             private String categoryUid;
-            private String categoryName;
-            private String segType;
+            private String name;
+            private String depth;
             private LocalDateTime createDate;
             private LocalDateTime modifyDate;
         }
