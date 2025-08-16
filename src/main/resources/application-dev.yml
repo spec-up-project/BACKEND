@@ -8,7 +8,7 @@ app:
   ollama:
     url: ${APP_OLLAMA_URL:https://8130d49efeff.ngrok-free.app}
     text-model: ${APP_OLLAMA_MODEL}
-    timeout-seconds: 30
+    timeout-seconds: 600
   duckling:
     url: ${APP_DUCKLING_URL}
     timeout-seconds: 10
