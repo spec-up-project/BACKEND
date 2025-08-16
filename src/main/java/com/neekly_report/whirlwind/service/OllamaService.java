@@ -69,6 +69,7 @@ public class OllamaService {
         try {
             String response = webClient.post()
                     .uri(ollamaUrl)
+                    .header(HttpHeaders.CONNECTION, "keep-alive")
                     .body(Mono.just(Map.of(
                             "model", textModel,
                             "prompt", prompt,
