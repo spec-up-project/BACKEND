@@ -4,6 +4,7 @@ import com.neekly_report.whirlwind.dto.CategoryDto;
 import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "카테고리 API")
+@Slf4j
 @RestController
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
-@Slf4j
 public class CategoryApiController {
 
     private final CategoryService categoryService;

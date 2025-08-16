@@ -3,8 +3,10 @@ package com.neekly_report.whirlwind.api;
 import com.neekly_report.whirlwind.dto.WeeklyReportDto;
 import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.WeeklyReportService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "리포트 생성 API")
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/report")
