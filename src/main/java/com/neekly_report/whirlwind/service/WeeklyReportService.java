@@ -61,12 +61,12 @@ public class WeeklyReportService {
         // 통계 계산
         WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
                 weekEvents);
-        ExtractionDto.Response.ExtractionPreview extraction = extractionService.previewExtraction(new ExtractionDto.Request.TextExtractionRequest(chat, "TEXT"));
+        ExtractionDto.Response.ParsedExtractionData extractionData = extractionService.extractScheduleJson(chat, userUid);
         String stats = String.format("완료율: %.1f%%, 생산성 점수: %d점",
                 summary.getCompletionRate(), summary.getProductivityScore());
 
         String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(
-                userUid, stats,extraction.getEvents().toString() + weekEvents
+                userUid, stats,extractionData.getSchedules().toString() + weekEvents
                 ));
 
         String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
