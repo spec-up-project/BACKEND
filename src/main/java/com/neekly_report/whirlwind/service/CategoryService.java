@@ -10,8 +10,10 @@ import com.neekly_report.whirlwind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +24,46 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
 
     public List<CategoryDto.Response.CategoryResponse> getUserCategories(String tUserUid) {
-        return categoryRepository.findByUser_userUid(tUserUid)
-                .stream()
-                .map(categoryMapper::toResponse)
-                .collect(Collectors.toList());
+        List<Category> categoryList = categoryRepository.findByUser_userUidOrderByCreateDateAsc(tUserUid);
+        List<CategoryDto.Response.CategoryResponse> categoryResponses = categoryList.stream().map(categoryMapper::toResponse).toList();
+
+        return buildCategoryTree(categoryResponses);
     }
 
-    public List<CategoryDto.Response.CategoryResponse> getCategoriesBySegType(String tUserUid, String segType) {
-        return categoryRepository.findByUser_userUidAndSegType(tUserUid, segType)
-                .stream()
-                .map(categoryMapper::toResponse)
-                .collect(Collectors.toList());
+    private List<CategoryDto.Response.CategoryResponse> buildCategoryTree(List<CategoryDto.Response.CategoryResponse> flatList) {
+        Map<String, CategoryDto.Response.CategoryResponse> map = new HashMap<>();
+        List<CategoryDto.Response.CategoryResponse> rootList = new ArrayList<>();
+
+
+        // 1. 모든 카테고리를 맵에 저장
+        for (CategoryDto.Response.CategoryResponse category : flatList) {
+            // children이 null이면 빈 리스트로 초기화
+            if (category.getChildren() == null) {
+                category.setChildren(new ArrayList<>());
+            }
+            map.put(category.getCategoryUid(), category);
+        }
+
+        // 2. 부모-자식 관계 설정
+        for (CategoryDto.Response.CategoryResponse category : flatList) {
+            String parentUid = category.getParentUid();
+
+            if (parentUid == null || parentUid.isEmpty()) {
+                // 루트 노드
+                rootList.add(category);
+            } else {
+                CategoryDto.Response.CategoryResponse parent = map.get(parentUid);
+                if (parent != null) {
+                    // 방어 코드: parent의 children이 null이면 초기화
+                    if (parent.getChildren() == null) {
+                        parent.setChildren(new ArrayList<>());
+                    }
+                    parent.getChildren().add(category);
+                }
+            }
+        }
+
+        return rootList;
     }
 
     public CategoryDto.Response.CategoryResponse createCategory(CategoryDto.Request.CategoryCreateRequest dto, String tUserUid) {

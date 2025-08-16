@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 public class CategoryDto {
@@ -50,6 +52,7 @@ public class CategoryDto {
             private String categoryUid;
             private String name;
             private String depth;
+            private List<CategoryResponse> children = new ArrayList<>(); ;
             private LocalDateTime createDate;
             private LocalDateTime modifyDate;
         }
