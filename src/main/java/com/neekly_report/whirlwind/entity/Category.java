@@ -25,7 +25,7 @@ public class Category extends Common {
     @Comment("상위 카테고리 ID")
     private String parentUid;
 
-    @Column(name = "CATEGORY_NAME")
+    @Column(name = "NAME")
     @Comment("카테고리 명")
     private String name;
 
