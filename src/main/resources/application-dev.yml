@@ -7,7 +7,7 @@ spring:
 app:
   ollama:
     url: ${APP_OLLAMA_URL}
-    model: ${APP_OLLAMA_MODEL}
+    text-model: ${APP_OLLAMA_MODEL}
     timeout-seconds: 30
   duckling:
     url: ${APP_DUCKLING_URL}
