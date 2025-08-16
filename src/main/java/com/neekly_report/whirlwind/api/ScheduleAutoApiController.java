@@ -11,9 +11,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "자동 일정 API", description = "LLM을 통한 자동 일정 저장 및 수정")
 @RestController
@@ -35,6 +36,8 @@ public class ScheduleAutoApiController {
         return ResponseEntity.ok(schedule);
     }
 
+    // TODO : 캘린더 자동 수정
+    // TODO : 캘린더 자동 삭제
 
 
 
