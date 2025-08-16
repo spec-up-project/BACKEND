@@ -1,6 +1,7 @@
 package com.neekly_report.whirlwind.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.neekly_report.whirlwind.entity.Schedule;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -85,6 +86,18 @@ public class ExtractionDto {
             private String originalText;
             private String processedText;
             private Long processingTimeMs;
+        }
+
+        /**
+         * 파싱된 추출 데이터
+         */
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class ParsedExtractionData {
+            private List<Schedule> schedules;
+            private String structuredData;
         }
     }
 }

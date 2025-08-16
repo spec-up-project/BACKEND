@@ -77,9 +77,9 @@ public class ScheduleDto {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        @ToString(exclude = {"scheduleId", "rawText"})
+        @ToString(exclude = {"scheduleUid", "rawText"})
         public static class CalendarEvent {
-            private String scheduleId;
+            private String scheduleUid;
             private String title;
             private String content;
 

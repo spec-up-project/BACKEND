@@ -47,21 +47,25 @@ public class Schedule extends Common {
     @Column(name = "SOURCE") // TEXT, FILE 등
     private String source;
 
+//    @Comment("종일 여부")
+//    @Column(name = "IS_ALL_DAY")
+//    private Boolean isAllDay;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "T_MAIN_CATEGORY_UID")
-    private Category mainCategory;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "T_SUB_CATEGORY_UID")
-    private Category subCategory;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "T_MAIN_CATEGORY_UID")
+//    private Category mainCategory;
+//
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "T_SUB_CATEGORY_UID")
+//    private Category subCategory;
 
     public ScheduleDto.Response.CalendarEvent toScheduleEvent() {
         return ScheduleDto.Response.CalendarEvent.builder()
-                .scheduleId(getScheduleUid())
+                .scheduleUid(getScheduleUid())
                 .title(getTitle())
                 .content(getContent())
                 .startTime(getStartTime())
@@ -74,6 +78,31 @@ public class Schedule extends Common {
     }
 
     public ScheduleDto.Response.ScheduleEvent toSchedulePreview() {
+        return ScheduleDto.Response.ScheduleEvent.builder()
+                .title(getTitle())
+                .content(getContent())
+                .startTime(getStartTime())
+                .endTime(getEndTime())
+                .rawText(getRawText())
+                .build();
+    }
+
+    // DTO 변환 메서드들
+    public ScheduleDto.Response.CalendarEvent toCalendarEvent() {
+        return ScheduleDto.Response.CalendarEvent.builder()
+                .scheduleUid(getScheduleUid())
+                .title(getTitle())
+                .content(getContent())
+                .startTime(getStartTime())
+                .endTime(getEndTime())
+                .source(getSource())
+                .rawText(getRawText())
+                .createDate(getCreateDate())
+                .modifyDate(getModifyDate())
+                .build();
+    }
+
+    public ScheduleDto.Response.ScheduleEvent toEventPreview() {
         return ScheduleDto.Response.ScheduleEvent.builder()
                 .title(getTitle())
                 .content(getContent())
