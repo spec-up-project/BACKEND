@@ -27,7 +27,6 @@ import java.util.List;
 public class ExtractionService {
 
     private final OllamaService ollamaService;
-    private final DucklingService ducklingService;
     private final ObjectMapper objectMapper;
 
     // Repositories
@@ -45,27 +44,18 @@ public class ExtractionService {
         try {
             log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
 
-            // 1. Duckling으로 날짜/시간 정보 추출
-//            List<DucklingService.DateTimeInfo> dateTimeInfos =
-//                    ducklingService.extractDateTime(chat, "ko");
-//
-//            log.info("extract datetime: {}", dateTimeInfos.toString());
-
-            // 2. Ollama로 구조화된 데이터 추출
+            // 1. Ollama로 구조화된 데이터 추출
             String structuredData = ollamaService.extractStructuredData(chat, LocalDateTime.now().toString());
 
-            // 3. JSON 파싱 및 엔터티 생성
+            // 2. JSON 파싱 및 엔터티 생성
             ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
 
-            // 4. Duckling 정보와 병합
-//            mergeDucklingTimeInfo(parsedData, dateTimeInfos);
-
-            // 5. 데이터베이스 저장
+            // 3. 데이터베이스 저장
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
             List<ScheduleDto.Response.CalendarEvent> savedEvents =
-                    saveSchedules(parsedData.schedules, user, "TEXT");
+                    saveSchedules(parsedData.schedules, user);
 
             long processingTime = System.currentTimeMillis() - startTime;
 
@@ -154,11 +144,6 @@ public class ExtractionService {
 
             // JSON 파싱
             ParsedExtractionData parsedData = parseStructuredData(structuredData, request.getText());
-
-            // Duckling 정보 병합
-            List<DucklingService.DateTimeInfo> dateTimeInfos =
-                    ducklingService.extractDateTime(request.getText(), "ko");
-            mergeDucklingTimeInfo(parsedData, dateTimeInfos);
 
             // DTO 변환 (저장하지 않고 미리보기용)
             List<ScheduleDto.Response.CalendarEventPreview> eventPreviews =
@@ -284,33 +269,17 @@ public class ExtractionService {
     }
 
     /**
-     * Duckling 시간 정보와 병합
-     */
-    private void mergeDucklingTimeInfo(ParsedExtractionData parsedData, List<DucklingService.DateTimeInfo> dateTimeInfos) {
-        if (dateTimeInfos.isEmpty()) return;
-
-        // 첫 번째 시간 정보를 첫 번째 일정에 적용
-        if (!parsedData.schedules.isEmpty()) {
-            Schedule firstSchedule = parsedData.schedules.get(0);
-            DucklingService.DateTimeInfo firstTimeInfo = dateTimeInfos.get(0);
-
-            firstSchedule.setStartTime(firstTimeInfo.getStart());
-            firstSchedule.setEndTime(firstTimeInfo.getEnd());
-        }
-    }
-
-    /**
      * 일정 저장
      */
-    private List<ScheduleDto.Response.CalendarEvent> saveSchedules(List<Schedule> schedules, User user, String source) {
+    private List<ScheduleDto.Response.CalendarEvent> saveSchedules(List<Schedule> schedules, User user) {
         List<ScheduleDto.Response.CalendarEvent> result = new ArrayList<>();
-        log.info("call save schedules: {}, {}, {}", schedules.size(), user.getUserUid(), source);
+        log.info("call save schedules: {}, {}, {}", schedules.size(), user.getUserUid(), "TEXT");
 
         for (Schedule schedule : schedules) {
             schedule.setUser(user);
-            schedule.setSource(source);
+            schedule.setSource("TEXT");
             Schedule saved = scheduleRepository.save(schedule);
-            log.info("saved schedule: {}, {}, {}", saved.getScheduleUid(), user.getUserUid(), source);
+            log.info("saved schedule: {}, {}, {}", saved.getScheduleUid(), user.getUserUid(), "TEXT");
             result.add(toCalendarEvent(saved));
         }
 

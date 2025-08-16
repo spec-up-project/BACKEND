@@ -56,6 +56,9 @@ public class ScheduleDto {
             private LocalDateTime startTime;
             private LocalDateTime endTime;
             private String rawText;
+            private Boolean isAllDay;
+            private String mainCategory;
+            private String subCategory;
             private String source;
             private LocalDateTime createDate;
             private LocalDateTime modifyDate;

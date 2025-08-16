@@ -58,6 +58,7 @@ public class ScheduleService {
     }
 
     public List<ScheduleDto.Response.ScheduleResponse> getUserSchedules(String userUid) {
+        log.info("사용자 일정 조회 - 사용자ID: {}", userUid);
         return scheduleRepository.findByUser_userUid(userUid)
                 .stream()
                 .map(scheduleMapper::toResponse)
@@ -70,26 +71,9 @@ public class ScheduleService {
     }
 
     /**
-     * 사용자의 모든 일정 조회
-     */
-    public List<CalendarEvent> getUserEvents(String userId) {
-        log.info("사용자 일정 조회 - 사용자ID: {}", userId);
-
-        List<Schedule> schedules = scheduleRepository.findByUser_userUid(userId);
-
-        return schedules.stream()
-                .map(Schedule::toCalendarEvent)
-                .sorted(Comparator.comparing(
-                        ScheduleDto.Response.CalendarEvent::getStartTime,
-                        Comparator.nullsLast(Comparator.naturalOrder())
-                ))
-                .toList();
-    }
-
-    /**
      * 기간별 일정 조회
      */
-    public List<CalendarEvent> getEventsByDateRange(
+    public List<CalendarEvent> getSchedulesByDateRange(
             String userId, LocalDateTime startDate, LocalDateTime endDate) {
 
         log.info("기간별 일정 조회 - 사용자ID: {}, 기간: {} ~ {}", userId, startDate, endDate);
@@ -131,7 +115,7 @@ public class ScheduleService {
         LocalDateTime startOfDay = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfDay = LocalDateTime.now().withHour(23).withMinute(59).withSecond(59);
 
-        return getEventsByDateRange(userId, startOfDay, endOfDay);
+        return getSchedulesByDateRange(userId, startOfDay, endOfDay);
     }
 
     /**
@@ -142,7 +126,7 @@ public class ScheduleService {
                 .withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
-        return getEventsByDateRange(userId, startOfWeek, endOfWeek);
+        return getSchedulesByDateRange(userId, startOfWeek, endOfWeek);
     }
 
     /**
@@ -152,7 +136,7 @@ public class ScheduleService {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime weekLater = now.plusDays(7);
 
-        return getEventsByDateRange(userId, now, weekLater);
+        return getSchedulesByDateRange(userId, now, weekLater);
     }
 
     private Boolean isAllDayEvent(LocalDateTime startTime, LocalDateTime endTime) {

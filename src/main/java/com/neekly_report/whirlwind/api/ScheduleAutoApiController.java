@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "자동 일정 API", description = "LLM을 통한 자동 일정 조회 및 관리")
+@Tag(name = "자동 일정 API", description = "LLM을 통한 자동 일정 저장 및 수정")
 @RestController
 @RequestMapping("/api/schedule/auto")
 @RequiredArgsConstructor
@@ -35,23 +35,7 @@ public class ScheduleAutoApiController {
         return ResponseEntity.ok(schedule);
     }
 
-    @Operation(summary = "사용자별 캘린더 조회 ")
-    @GetMapping
-    public ResponseEntity<List<ScheduleDto.Response.ScheduleResponse>> getUserSchedules(
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
-        List<ScheduleDto.Response.ScheduleResponse> schedules = scheduleService.getUserSchedules(userDetail.getUserUid());
-        return ResponseEntity.ok(schedules);
-    }
-
-    @Operation(summary = "사용자별 캘린더 상세 조회 ")
-    @GetMapping("detail/{scheduleUid}")
-    public ResponseEntity<ScheduleDto.Response.ScheduleResponse> getUserSchedulesDetail(
-            @PathVariable String scheduleUid,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        ScheduleDto.Response.ScheduleResponse schedules = scheduleService.getUserSchedulesDetail(scheduleUid, userDetail.getUserUid());
-        return ResponseEntity.ok(schedules);
-    }
 
 
 }

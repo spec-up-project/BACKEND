@@ -53,7 +53,7 @@ public class WeeklyReportService {
 
         // 데이터 수집
         List<CalendarEvent> weekEvents =
-                scheduleService.getEventsByDateRange(userUid, startOfWeek, endOfWeek);
+                scheduleService.getSchedulesByDateRange(userUid, startOfWeek, endOfWeek);
 
         List<CalendarEvent> upcomingEvents =
                 scheduleService.getUpcomingEvents(userUid);
@@ -156,7 +156,7 @@ public class WeeklyReportService {
 
         // 데이터 수집
         List<CalendarEvent> weekEvents =
-                scheduleService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
+                scheduleService.getSchedulesByDateRange(userId, startOfWeek, endOfWeek);
 
         List<CalendarEvent> upcomingEvents =
                 scheduleService.getUpcomingEvents(userId);
@@ -295,7 +295,7 @@ public class WeeklyReportService {
                 .withHour(0).withMinute(0).withSecond(0);
         LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
 
-        List<CalendarEvent> weekEvents = scheduleService.getEventsByDateRange(userId, startOfWeek, endOfWeek);
+        List<CalendarEvent> weekEvents = scheduleService.getSchedulesByDateRange(userId, startOfWeek, endOfWeek);
         WeeklySummary summary = calculateWeeklySummary(weekEvents);
 
         // 엑셀 생성
