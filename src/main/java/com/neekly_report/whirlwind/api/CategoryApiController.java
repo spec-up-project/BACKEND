@@ -32,17 +32,7 @@ public class CategoryApiController {
         return ResponseEntity.ok(categories);
     }
 
-    @Operation(summary = "세그먼트 타입별 카테고리 조회")
-    @GetMapping("/segtype/{segType}")
-    public ResponseEntity<List<CategoryDto.Response.CategoryResponse>> getCategoriesBySegType(
-            @PathVariable String segType,
-            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        List<CategoryDto.Response.CategoryResponse> categories = categoryService.getCategoriesBySegType(userDetail.getUserUid(), segType);
-        return ResponseEntity.ok(categories);
-    }
-
-    @Operation(summary = "카테고리 생성 < MAIN : 대분류, SUB: 소분류 >")
+    @Operation(summary = "카테고리 생성")
     @PostMapping("insert")
     public ResponseEntity<CategoryDto.Response.CategoryResponse> createCategory(
             @RequestBody @Valid CategoryDto.Request.CategoryCreateRequest request,

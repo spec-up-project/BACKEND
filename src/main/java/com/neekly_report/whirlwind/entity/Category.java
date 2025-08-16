@@ -15,18 +15,23 @@ import org.hibernate.annotations.GenericGenerator;
 public class Category extends Common {
 
     @Id
+    @Comment("카테고리 ID")
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "T_CATEGORY_UID", nullable = false, updatable = false, columnDefinition = "CHAR(36)")
     private String categoryUid;
 
-    @Column(name = "CATEGORY_NAME")
-    @Comment("분류 명")
-    private String categoryName;
+    @Column(name = "PARENT_UID", columnDefinition = "CHAR(36)")
+    @Comment("상위 카테고리 ID")
+    private String parentUid;
 
-    @Column(name = "SEG_TYPE")
-    @Comment("분류 구분")
-    private String segType;
+    @Column(name = "NAME")
+    @Comment("카테고리 명")
+    private String name;
+
+    @Column(name = "DEPTH", columnDefinition = "SMALLINT")
+    @Comment("카테고리 DEPTH")
+    private String depth;
 
     @ManyToOne
     @JoinColumn(name = "T_USER_UID")
