@@ -22,7 +22,7 @@ public class WeeklyReport extends Common {
     @Column(name = "TITLE")
     private String title;
 
-    @Column(name = "CONTENT")
+    @Column(name = "CONTENT", columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

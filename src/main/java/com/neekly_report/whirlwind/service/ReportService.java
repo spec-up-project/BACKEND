@@ -4,9 +4,15 @@ import com.neekly_report.whirlwind.dto.CalendarDto;
 import com.neekly_report.whirlwind.dto.CalendarDto.Response.CalendarEvent;
 import com.neekly_report.whirlwind.dto.ReportDto;
 import com.neekly_report.whirlwind.dto.ReportDto.Response.WeeklySummary;
+import com.neekly_report.whirlwind.entity.User;
+import com.neekly_report.whirlwind.entity.WeeklyReport;
+import com.neekly_report.whirlwind.mapper.ReportMapper;
+import com.neekly_report.whirlwind.repository.ReportRepository;
+import com.neekly_report.whirlwind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,15 +21,36 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class ReportService {
+    private final ReportMapper reportMapper;
+
+    private final UserRepository userRepository;
+    private final ReportRepository reportRepository;
 
     private final CalendarService calendarService;
     private final OllamaService ollamaService;
 
     private final ExcelReportGenerator excelReportGenerator;
+
+    public ReportDto.Response.TextReport makeReport(ReportDto.Request.TextReport textReport, String userUid) {
+        String reportResult = ollamaService.makeReport(textReport.getContent());
+        log.info("structured data: {}", reportResult);
+
+        User user = userRepository.findById(userUid)
+                .orElseThrow(() -> new RuntimeException("사용자 없음"));
+
+        textReport.setContent(reportResult);
+
+        // 리포트 저장
+        WeeklyReport report = reportMapper.toEntity(textReport);
+        report.setUser(user);
+        reportRepository.save(report);
+
+        return reportMapper.toResponse(report);
+    }
 
     /**
      * 주간 리포트 생성

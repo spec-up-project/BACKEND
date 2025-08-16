@@ -128,7 +128,7 @@ public class OllamaService {
             
             텍스트: %s
             
-            JSON만 응답해주세요:
+            JSON으로만 응답해주세요:
             """.formatted(text);
 
         return generateResponse(prompt);
@@ -183,6 +183,26 @@ public class OllamaService {
             
             형식으로 작성해주세요.
             """.formatted(scheduleData, completionStats);
+
+        return generateResponse(prompt);
+    }
+
+    /**
+     * 리포트 생성
+     */
+    public String makeReport(String schedule) {
+        String prompt = """
+            다음 데이터와 포맷을 바탕으로 주간 리포트를 Text 형식으로 생성해주세요.
+            
+            일정 데이터: %s
+            
+                ■ 제목
+                  1. 소제목
+                     1) 분류
+                       (1) 분류 Part : 내용 (기한/완료일)
+            
+            형식으로 작성해주세요.
+            """.formatted(schedule);
 
         return generateResponse(prompt);
     }

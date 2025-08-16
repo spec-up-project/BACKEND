@@ -7,8 +7,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ReportDto {
+    public static class Request {
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class TextReport {
+
+            private String title;
+            private String content;
+        }
+    }
 
     public static class Response {
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class TextReport {
+            private String reportUid;
+            private String title;
+            private String content; // 마크다운 형식의 리포트
+        }
 
         @Data
         @Builder

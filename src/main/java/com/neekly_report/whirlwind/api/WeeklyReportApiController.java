@@ -1,7 +1,9 @@
 package com.neekly_report.whirlwind.api;
 
 import com.neekly_report.whirlwind.dto.ReportDto;
+import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.ReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -9,10 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,9 +20,19 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/team-report")
+@RequestMapping("/api/report")
 public class WeeklyReportApiController {
     private final ReportService reportService;
+
+    /**
+     * 주간 보고서 (json 형식)
+     */
+    @GetMapping("/make")
+    public ResponseEntity<ReportDto.Response.TextReport> makeReport(@RequestBody @Valid ReportDto.Request.TextReport textReport,
+                                                                      @AuthenticationPrincipal UserDto.UserDetail userDetail) {
+
+        return ResponseEntity.ok(reportService.makeReport(textReport, userDetail.getUserUid()));
+    }
 
     /**
      * 주간 팀 보고서 (Markdown 형식)
