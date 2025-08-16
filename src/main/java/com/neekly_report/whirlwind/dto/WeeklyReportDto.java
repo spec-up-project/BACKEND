@@ -41,11 +41,7 @@ public class WeeklyReportDto {
         public static class WeeklyReportRequest {
             private String userUid;
             private String completionStats;
-            private String title;
-            private String mainCategory;
-            private String subCategory;
             private String content;
-            private String finalDate; // "2024-08-01 ~ 2024-08-07"
         }
     }
 

@@ -51,7 +51,15 @@ public class Schedule extends Common {
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
 
-    public ScheduleDto.Response.CalendarEvent toCalendarEvent() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "T_MAIN_CATEGORY_UID")
+    private Category mainCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "T_SUB_CATEGORY_UID")
+    private Category subCategory;
+
+    public ScheduleDto.Response.CalendarEvent toScheduleEvent() {
         return ScheduleDto.Response.CalendarEvent.builder()
                 .scheduleId(getScheduleUid())
                 .title(getTitle())
@@ -65,8 +73,8 @@ public class Schedule extends Common {
                 .build();
     }
 
-    public ScheduleDto.Response.CalendarEventPreview toEventPreview() {
-        return ScheduleDto.Response.CalendarEventPreview.builder()
+    public ScheduleDto.Response.ScheduleEvent toSchedulePreview() {
+        return ScheduleDto.Response.ScheduleEvent.builder()
                 .title(getTitle())
                 .content(getContent())
                 .startTime(getStartTime())

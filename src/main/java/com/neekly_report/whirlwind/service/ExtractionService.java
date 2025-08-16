@@ -42,20 +42,14 @@ public class ExtractionService {
         long startTime = System.currentTimeMillis();
 
         try {
-            log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
-
-            // 1. Ollama로 구조화된 데이터 추출
-            String structuredData = ollamaService.extractStructuredData(chat, LocalDateTime.now().toString());
-
-            // 2. JSON 파싱 및 엔터티 생성
-            ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
+            Result result = extractScheduleJson(chat, userId);
 
             // 3. 데이터베이스 저장
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
 
             List<ScheduleDto.Response.CalendarEvent> savedEvents =
-                    saveSchedules(parsedData.schedules, user);
+                    saveSchedules(result.parsedData().schedules, user);
 
             long processingTime = System.currentTimeMillis() - startTime;
 
@@ -65,7 +59,7 @@ public class ExtractionService {
             return ExtractionDto.Response.ExtractionResult.builder()
                     .schedules(savedEvents)
                     .originalText(chat)
-                    .processedText(structuredData)
+                    .processedText(result.structuredData())
                     .sourceType("TEXT")
                     .processingTimeMs(processingTime)
                     .success(true)
@@ -84,6 +78,20 @@ public class ExtractionService {
                     .errorMessage(e.getMessage())
                     .build();
         }
+    }
+
+    private Result extractScheduleJson(String chat, String userId) {
+        log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
+
+        // 1. Ollama로 구조화된 데이터 추출
+        String structuredData = ollamaService.extractStructuredScheduleData(chat, LocalDateTime.now().toString());
+
+        // 2. JSON 파싱 및 엔터티 생성
+        ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
+        return new Result(structuredData, parsedData);
+    }
+
+    private record Result(String structuredData, ParsedExtractionData parsedData) {
     }
 
     /**
@@ -140,13 +148,13 @@ public class ExtractionService {
 
         try {
             // Ollama로 구조화된 데이터 추출
-            String structuredData = ollamaService.extractStructuredData(request.getText(), LocalDateTime.now().toString());
+            String structuredData = ollamaService.extractStructuredScheduleData(request.getText(), LocalDateTime.now().toString());
 
             // JSON 파싱
             ParsedExtractionData parsedData = parseStructuredData(structuredData, request.getText());
 
             // DTO 변환 (저장하지 않고 미리보기용)
-            List<ScheduleDto.Response.CalendarEventPreview> eventPreviews =
+            List<ScheduleDto.Response.ScheduleEvent> eventPreviews =
                     parsedData.schedules.stream()
                             .map(this::toEventPreview)
                             .toList();
@@ -317,8 +325,8 @@ public class ExtractionService {
                 .build();
     }
 
-    private ScheduleDto.Response.CalendarEventPreview toEventPreview(Schedule schedule) {
-        return ScheduleDto.Response.CalendarEventPreview.builder()
+    private ScheduleDto.Response.ScheduleEvent toEventPreview(Schedule schedule) {
+        return ScheduleDto.Response.ScheduleEvent.builder()
                 .title(schedule.getTitle())
                 .content(schedule.getContent())
                 .startTime(schedule.getStartTime())

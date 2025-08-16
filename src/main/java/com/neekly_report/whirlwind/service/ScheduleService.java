@@ -82,7 +82,7 @@ public class ScheduleService {
                 userId, startDate, endDate);
 
         return schedules.stream()
-                .map(Schedule::toCalendarEvent)
+                .map(Schedule::toScheduleEvent)
                 .sorted(Comparator.comparing(
                         ScheduleDto.Response.CalendarEvent::getStartTime,
                         Comparator.nullsLast(Comparator.naturalOrder())
@@ -100,7 +100,7 @@ public class ScheduleService {
                 userId, keyword, keyword);
 
         return schedules.stream()
-                .map(Schedule::toCalendarEvent)
+                .map(Schedule::toScheduleEvent)
                 .sorted(Comparator.comparing(
                         ScheduleDto.Response.CalendarEvent::getStartTime,
                         Comparator.nullsLast(Comparator.naturalOrder())

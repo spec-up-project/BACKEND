@@ -115,7 +115,7 @@ public class ScheduleDto {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class CalendarEventPreview {
+        public static class ScheduleEvent {
             private String title;
             private String content;
 
