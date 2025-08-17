@@ -1,11 +1,10 @@
 package com.neekly_report.whirlwind.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.neekly_report.whirlwind.entity.User;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 public class ScheduleDto {
@@ -13,8 +12,22 @@ public class ScheduleDto {
     public static class Request {
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-        public static class ScheduleCreateRequest {
+        public static class ScheduleAutoCreateRequest {
             private String rawText;
+        }
+
+        @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+        public static class ScheduleManualCreateRequest {
+            private String scheduleUid;
+            private String title;
+            private String content;
+            private LocalDateTime startTime;
+            private LocalDateTime endTime;
+            private String rawText;
+            private String source; // "TEXT", "FILE"
+            private Boolean isAllDay;
+
+            private String categoryUid;
         }
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -26,13 +39,9 @@ public class ScheduleDto {
             private LocalDateTime endTime;
             private String rawText;
             private String source; // "TEXT", "FILE"
-            private User user;
-        }
+            private Boolean isAllDay;
 
-        @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-        public static class TextBasedScheduleRequest {
-            @NotBlank(message = "텍스트는 필수 입력값입니다.")
-            private String text;
+            private String categoryUid;
         }
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -43,6 +52,7 @@ public class ScheduleDto {
             private LocalDateTime endTime;
             private String rawText;
             private String source;
+            private Boolean isAllDay;
         }
     }
 
@@ -57,11 +67,12 @@ public class ScheduleDto {
             private LocalDateTime endTime;
             private String rawText;
             private Boolean isAllDay;
-            private String mainCategory;
-            private String subCategory;
             private String source;
             private LocalDateTime createDate;
             private LocalDateTime modifyDate;
+
+            private String categoryUid;
+            private List<CategoryDto.Response.CategoryResponse> category;
         }
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -126,6 +137,7 @@ public class ScheduleDto {
             private LocalDateTime endTime;
 
             private String rawText;
+            private Boolean isAllDay;
         }
     }
 }

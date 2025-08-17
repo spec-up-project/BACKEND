@@ -24,17 +24,17 @@ public class ScheduleManualApiController {
 
     private final ScheduleService scheduleService;
 
-    @Operation(summary = "캘린더 수동 일정 저장")
+    @Operation(summary = "캘린더 수동 일정 저장", description = "categoryUid : 최하단 카테고리의 Uid")
     @PostMapping("insert")
     public ResponseEntity<ScheduleDto.Response.ScheduleResponse> insertSchedule(
-            @RequestBody @Valid ScheduleDto.Request.ScheduleCreateRequest request,
+            @RequestBody @Valid ScheduleDto.Request.ScheduleManualCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         ScheduleDto.Response.ScheduleResponse schedules = scheduleService.insertSchedules(userDetail.getUserUid(), request);
         return ResponseEntity.ok(schedules);
     }
 
-    @Operation(summary = "캘린더 수동 일정 수정")
+    @Operation(summary = "캘린더 수동 일정 수정", description = "categoryUid : 최하단 카테고리의 Uid")
     @PostMapping("update")
     public ResponseEntity<ScheduleDto.Response.ScheduleResponse> updateSchedule(
             @RequestBody @Valid ScheduleDto.Request.ScheduleUpdateRequest request,

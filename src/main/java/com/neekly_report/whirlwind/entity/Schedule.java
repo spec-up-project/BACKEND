@@ -48,21 +48,17 @@ public class Schedule extends Common {
     @Column(name = "SOURCE") // TEXT, FILE 등
     private String source;
 
-//    @Comment("종일 여부")
-//    @Column(name = "IS_ALL_DAY")
-//    private Boolean isAllDay;
+    @Comment("종일 여부")
+    @Column(name = "IS_ALL_DAY")
+    private Boolean isAllDay;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "T_MAIN_CATEGORY_UID")
-//    private Category mainCategory;
-//
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "T_SUB_CATEGORY_UID")
-//    private Category subCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "T_CATEGORY_UID", nullable = false)
+    private Category category;
 
     public ScheduleDto.Response.CalendarEvent toScheduleEvent() {
         return ScheduleDto.Response.CalendarEvent.builder()

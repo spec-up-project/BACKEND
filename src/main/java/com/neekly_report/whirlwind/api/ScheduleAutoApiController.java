@@ -29,7 +29,7 @@ public class ScheduleAutoApiController {
     @Operation(summary = "캘린더 자동 일정 시간 추출 저장 ")
     @PostMapping
     public ResponseEntity<ExtractionDto.Response.ExtractionResult> createScheduleAuto(
-            @RequestBody ScheduleDto.Request.ScheduleCreateRequest request,
+            @RequestBody ScheduleDto.Request.ScheduleAutoCreateRequest request,
             @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         ExtractionDto.Response.ExtractionResult schedule = extractionService.extractDatetimeFromText(request.getRawText(), userDetail.getUserUid());

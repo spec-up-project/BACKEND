@@ -4,10 +4,12 @@ import com.neekly_report.whirlwind.dto.ScheduleDto;
 import com.neekly_report.whirlwind.entity.Schedule;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CategoryMapper.class})
 public interface ScheduleMapper {
 
-    Schedule toEntity(ScheduleDto.Request.ScheduleCreateRequest dto);
+    Schedule toEntity(ScheduleDto.Request.ScheduleAutoCreateRequest dto);
+
+    Schedule toEntity(ScheduleDto.Request.ScheduleManualCreateRequest dto);
 
     Schedule toEntity(ScheduleDto.Request.ScheduleUpdateRequest dto);
 

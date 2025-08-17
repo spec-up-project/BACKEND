@@ -24,9 +24,8 @@ Authorization: {{ authorizationToken }}
 Content-Type: application/json
 
 {
-  "parentUid" : "368b7670-55ab-4336-8d0b-7db3360ed270",
-  "name": "소분류-2-1",
-  "depth": "3"
+  "name": "대분류-2",
+  "depth": "1"
 }
 
 ### 사용자별 카테고리 수정

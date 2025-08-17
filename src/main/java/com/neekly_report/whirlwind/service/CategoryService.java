@@ -30,7 +30,7 @@ public class CategoryService {
         return buildCategoryTree(categoryResponses);
     }
 
-    private List<CategoryDto.Response.CategoryResponse> buildCategoryTree(List<CategoryDto.Response.CategoryResponse> flatList) {
+    public List<CategoryDto.Response.CategoryResponse> buildCategoryTree(List<CategoryDto.Response.CategoryResponse> flatList) {
         Map<String, CategoryDto.Response.CategoryResponse> map = new HashMap<>();
         List<CategoryDto.Response.CategoryResponse> rootList = new ArrayList<>();
 
