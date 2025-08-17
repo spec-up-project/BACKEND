@@ -13,15 +13,21 @@ import com.neekly_report.whirlwind.repository.WeeklyReportRepository;
 import com.neekly_report.whirlwind.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,66 +42,31 @@ public class WeeklyReportService {
 
     private final ScheduleService scheduleService;
     private final OllamaService ollamaService;
-    private final ExtractionService extractionService;
+    private final WeeklyReportAsyncService weeklyReportAsyncService;
 
     private final ExcelReportGenerator excelReportGenerator;
 
-    /**
-     * 주간 리포트 생성
-     */
-    public WeeklyReportDto.Response.WeeklyReportResult generateWeeklyReport(String userUid, String chat) {
-        log.info("주간 리포트 생성 - 사용자ID: {}", userUid);
-
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfWeek = now.minusDays(now.getDayOfWeek().getValue() - 1)
-                .withHour(0).withMinute(0).withSecond(0);
-        LocalDateTime endOfWeek = startOfWeek.plusDays(6).withHour(23).withMinute(59).withSecond(59);
-
-        // 데이터 수집
-        List<CalendarEvent> weekEvents =
-                scheduleService.getSchedulesByDateRange(userUid, startOfWeek, endOfWeek);
-
-        List<CalendarEvent> upcomingEvents =
-                scheduleService.getUpcomingEvents(userUid);
-
-        // 통계 계산
-        WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
-                weekEvents);
-        ExtractionDto.Response.ParsedExtractionData extractionData = extractionService.extractScheduleJson(chat, userUid);
-        log.info("Duckling 기반 일정 후보 수: {}", extractionData.getSchedules().size());
-
-        String stats = String.format("완료율: %.1f%%, 생산성 점수: %d점",
-                summary.getCompletionRate(), summary.getProductivityScore());
-        log.info("ducking 합친 content 전체 = {}", extractionData.getSchedules().toString() + weekEvents);
-
-        String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(
-                userUid, stats,extractionData.getSchedules().toString() + weekEvents
-                ));
-
-        String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                + " ~ " + endOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        return WeeklyReportDto.Response.WeeklyReportResult.builder()
-                .reportDate(now)
-                .reportPeriod(reportPeriod)
-                .title(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고")
-                .summary(summary)
-                .upcomingEvents(upcomingEvents)
-                .reportContent(reportContent)
-                .build();
-    }
-
     @Transactional
-    public WeeklyReportDto.Response.WeeklyReportResult createReport(WeeklyReportDto.Response.WeeklyReportResult reportResult, String userUid) {
+    public String requestReport(String userUid, String chat) {
         User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
-        WeeklyReport report = weeklyReportMapper.toEntity(reportResult);
+        WeeklyReport report = new WeeklyReport();
         report.setUser(user);
-        report.setContent(reportResult.getReportContent());
+        report.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고");
+        report.setStatus("REQUEST");
 
-        weeklyReportRepository.save(report);
-        return weeklyReportMapper.toWeeklyReportResult(report);
+        WeeklyReport savedReport = weeklyReportRepository.save(report);
+
+        // 트랜잭션 커밋 이후에 비동기 호출
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                weeklyReportAsyncService.generateContentAsync(savedReport.getReportUid(), userUid, chat);
+            }
+        });
+
+        return savedReport.getReportUid();
     }
 
     @Transactional(readOnly = true)
@@ -105,33 +76,25 @@ public class WeeklyReportService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public WeeklyReportDto.Response.SaveResponse updateCategory(String reportUid, String mainCategoryUid, String subCategoryUid) {
-        WeeklyReport report = weeklyReportRepository.findByReportUid(reportUid);
-        Category mainCategory = categoryRepository.findById(mainCategoryUid)
-                .orElseThrow(() -> new RuntimeException("대분류 없음"));
-        Category subCategory = categoryRepository.findById(subCategoryUid)
-                .orElseThrow(() -> new RuntimeException("소분류 없음"));
-//        report.setMainCategory(mainCategory);
-//        report.setSubCategory(subCategory);
-        return weeklyReportMapper.toSaveResponse(report);
-    }
-
     public WeeklyReportDto.Response.TextReport makeReport(WeeklyReportDto.Request.TextReport textReport, String userUid) {
-        String reportResult = ollamaService.makeReport(textReport.getContent());
-        log.info("structured data: {}", reportResult);
-
         User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
-
-        textReport.setContent(reportResult);
 
         // 리포트 저장
         WeeklyReport report = weeklyReportMapper.toEntity(textReport);
         report.setUser(user);
-        weeklyReportRepository.save(report);
+        report.setStatus("REQUEST");
+        WeeklyReport savedReport = weeklyReportRepository.save(report);
 
-        return weeklyReportMapper.toTextReport(report);
+        // 트랜잭션 커밋 이후에 비동기 호출
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                weeklyReportAsyncService.generateContentAsync(savedReport.getReportUid(), userUid, textReport.getContent());
+            }
+        });
+
+        return weeklyReportMapper.toTextReport(savedReport);
     }
 
     /**

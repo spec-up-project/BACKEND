@@ -42,6 +42,7 @@ public class WeeklyReportDto {
             private String userUid;
             private String completionStats;
             private String content;
+            private List<ScheduleDto.Response.CalendarEvent> weekEvents;
         }
     }
 

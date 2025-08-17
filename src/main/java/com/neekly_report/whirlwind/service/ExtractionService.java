@@ -172,13 +172,7 @@ public class ExtractionService {
         log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
 
         // 1. Ollama로 구조화된 데이터 추출
-        String structuredData;
-        if (ducklingService.hasValidDateTime(chat, "ko")) {
-            // Duckling 결과를 기반으로 간단한 일정 JSON 생성 (임시)
-            structuredData = ducklingToSimpleJson(chat, ducklingService.extractDateTime(chat, "ko"));
-        } else {
-            throw new NoDateTimeFormatException("유효한 일시를 포함해주세요.");
-        }
+        String structuredData = ollamaService.extractStructuredScheduleData(chat, LocalDateTime.now().toString());
         // 2. JSON 파싱 및 엔터티 생성
         return parseStructuredData(structuredData, chat);
     }

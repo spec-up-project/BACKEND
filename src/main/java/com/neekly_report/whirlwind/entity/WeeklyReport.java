@@ -25,6 +25,9 @@ public class WeeklyReport extends Common {
     @Column(name = "CONTENT", columnDefinition = "MEDIUMTEXT")
     private String content;
 
+    @Column(name = "STATUS")
+    private String status; // 예: "REQUEST", "COMPLETE"
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "T_USER_UID", nullable = false)
     private User user;
