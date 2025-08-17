@@ -16,6 +16,9 @@ public interface CategoryMapper {
     // UpdateRequest → Entity
     Category toEntity(CategoryDto.Request.CategoryUpdateRequest dto);
 
+    // Response → Entity
+    Category toEntity(CategoryDto.Response.CategoryResponse dto);
+
     // Entity → Response DTO
     CategoryDto.Response.CategoryResponse toResponse(Category entity);
 
