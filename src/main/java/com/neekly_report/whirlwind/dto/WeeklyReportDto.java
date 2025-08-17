@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class WeeklyReportDto {
@@ -77,6 +76,20 @@ public class WeeklyReportDto {
             private List<TodoDto.Response.TodoItem> completedTodos;
             private String reportContent;
             private String userUid;
+        }
+
+        @Data
+        @Builder
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class WeeklyReportDetail{
+            private String reportUid;
+            private String title;
+            private String content;
+            private String rawText;
+            private String status; // 예: "REQUEST", "COMPLETE"
+            private LocalDateTime createDate;
+            private LocalDateTime modifyDate;
         }
 
         @Data
