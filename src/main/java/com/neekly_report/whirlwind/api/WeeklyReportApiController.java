@@ -34,7 +34,7 @@ public class WeeklyReportApiController {
     /**
      * 주간 팀 보고서 생성
      */
-    @Operation(summary = "채팅용 자동 주간보고 생성")
+    @Operation(summary = "자동 주간보고 생성")
     @PostMapping("chat")
     public ResponseEntity<String> requestMakeReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
                                                                                          @AuthenticationPrincipal UserDto.UserDetail userDetail) {
