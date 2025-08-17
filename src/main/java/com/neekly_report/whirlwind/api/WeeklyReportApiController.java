@@ -3,6 +3,7 @@ package com.neekly_report.whirlwind.api;
 import com.neekly_report.whirlwind.dto.WeeklyReportDto;
 import com.neekly_report.whirlwind.dto.UserDto;
 import com.neekly_report.whirlwind.service.WeeklyReportService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,53 +33,48 @@ public class WeeklyReportApiController {
     /**
      * 주간 팀 보고서 생성
      */
-    @GetMapping
-    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportResult> makeMainWeeklyReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
-                                                                                            @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        WeeklyReportDto.Response.WeeklyReportResult report = weeklyReportService.generateWeeklyReport(userDetail.getUserUid(), request.getChat());
-        return ResponseEntity.ok(weeklyReportService.createReport(report, userDetail.getUserUid()));
+    @Operation(summary = "채팅용 자동 주간보고 생성")
+    @GetMapping("chat")
+    public ResponseEntity<String> requestMakeReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
+                                                                                         @AuthenticationPrincipal UserDto.UserDetail userDetail) {
+        return ResponseEntity.ok(weeklyReportService.requestReport(userDetail.getUserUid(), request.getChat()));
     }
 
     /**
      * 주간 보고서 (json 형식)
      */
-    @PostMapping("/make")
-    public ResponseEntity<WeeklyReportDto.Response.TextReport> makeReport(@RequestBody @Valid WeeklyReportDto.Request.TextReport textReport,
+    @Operation(summary = "팝업 내 자동 주간보고 생성")
+    @PostMapping("make")
+    public ResponseEntity<WeeklyReportDto.Response.TextReport> makeReport(@RequestBody WeeklyReportDto.Request.TextReport textReport,
                                                                           @AuthenticationPrincipal UserDto.UserDetail userDetail) {
 
         return ResponseEntity.ok(weeklyReportService.makeReport(textReport, userDetail.getUserUid()));
     }
 
-    @GetMapping("/weekly")
-    public ResponseEntity<List<WeeklyReportDto.Response.SaveResponse>> getWeeklyReports(@RequestParam String userUid) {
-        return ResponseEntity.ok(weeklyReportService.getReportsByUser(userUid));
-    }
-
-    @PutMapping("/{reportUid}/categorize")
-    public ResponseEntity<WeeklyReportDto.Response.SaveResponse> updateCategory(
-            @PathVariable String reportUid,
-            @RequestParam String mainCategoryUid,
-            @RequestParam String subCategoryUid
-    ) {
-        return ResponseEntity.ok(weeklyReportService.updateCategory(reportUid, mainCategoryUid, subCategoryUid));
+    @Operation(summary = "전체 주간보고 조회")
+    @GetMapping
+    public ResponseEntity<List<WeeklyReportDto.Response.SaveResponse>> getWeeklyReports(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
+        return ResponseEntity.ok(weeklyReportService.getReportsByUser(userDetail.getUserUid()));
     }
 
     /**
      * 주간 팀 보고서 (Markdown 형식)
      */
-    @GetMapping("/weekly/markdown")
-    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportResult> getWeeklyMarkdownReport(@RequestParam String userId) {
-        WeeklyReportDto.Response.WeeklyReportResult report = weeklyReportService.generateMarkdown(userId);
+    @Operation(summary = "주간 팀 보고서 (Markdown 형식) - 미완성")
+    @GetMapping("markdown")
+    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportResult> getWeeklyMarkdownReport(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
+        WeeklyReportDto.Response.WeeklyReportResult report = weeklyReportService.generateMarkdown(userDetail.getUserUid());
         return ResponseEntity.ok(report);
     }
 
     /**
      * 주간 팀 보고서 (Excel 다운로드)
      */
-    @GetMapping("/weekly/excel")
-    public ResponseEntity<Resource> downloadWeeklyExcelReport(@RequestParam String userId) {
+    @Operation(summary = "주간 팀 보고서 (Excel 다운로드) - 미완성")
+    @GetMapping("excel")
+    public ResponseEntity<Resource> downloadWeeklyExcelReport(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
         try {
-            File excelFile = weeklyReportService.generateWeeklyReportExcel(userId);
+            File excelFile = weeklyReportService.generateWeeklyReportExcel(userDetail.getUserUid());
             InputStreamResource resource = new InputStreamResource(new FileInputStream(excelFile));
 
             return ResponseEntity.ok()

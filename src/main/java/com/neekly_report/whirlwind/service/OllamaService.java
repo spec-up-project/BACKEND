@@ -184,18 +184,22 @@ public class OllamaService {
      */
     public String generateWeeklyReport(WeeklyReportDto.Request.WeeklyReportRequest request) {
         String prompt = """
-            1. 다음 데이터와 형식 예시를 바탕으로 주간 리포트를 텍스트 리스트 형식으로 단계별로 작성해줘.
-           \s
-            완료 통계: %s
-           \s
+            1. 다음 데이터 전체(일정 텍스트, 기존 일정 데이터)와 형식 예시를 바탕으로 주간 리포트를 텍스트 리스트 형식으로 단계별로 작성해줘.
+            2. 기존 일정 데이터 json 내용도 합쳐서 작성해줘.
+            
+            오늘 날짜와 시간: %s
+
            형식:
                 ■ 대분류명
                   1. 중분류명
-                     1) 소분류명 Part : 제목 (종료 날짜)
+                     1) 소분류명 : 제목 (종료 날짜)
                     \s
-           
-            일정 데이터: %s
-           \s""".formatted(request.getCompletionStats(), request.getContent());
+          \s
+            일정 텍스트:\s
+                %s
+            기존 일정 데이터 json:\s
+                %s
+           \s""".formatted(request.getToday(), request.getContent(), request.getWeekEvents());
 
         return generateResponse(prompt);
     }
@@ -226,7 +230,7 @@ public class OllamaService {
      */
     public String makeReport(String schedule) {
         String prompt = """
-            다음 데이터와 포맷을 바탕으로 주간 리포트를 Text 형식으로 생성해주세요.
+            1. 다음 데이터와 형식 예시를 바탕으로 주간 리포트를 텍스트 리스트 형식으로 단계별로 작성해줘.
             
             일정 데이터: %s
             

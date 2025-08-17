@@ -9,10 +9,16 @@ GET http://localhost:8081/api/team-report/weekly/excel?
 Authorization: Bearer {{accessToken}}
 
 ### 주간보고 생성 확인
-GET http://localhost:8081/api/report
+GET http://localhost:8081/api/report/chat
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
 {
-  "chat": "나는 오늘 plms 회의를 오후3시에 진행할게용"
+  "chat": "오늘 오후 3시에는 고객 요청사항 분석 회의가 있고, 내일 오전 10시에는 기술 전략 수립 회의가 있어. 수요일 오후 1시에는 서비스 안정화 회의가 있고, 목요일 오전 9시에는 신규 기능 배포 회의가 있어. 금요일 오후 4시에는 팀 피드백 회의가 예정되어 있어."
 }
+
+### 전체 목록 조회
+GET http://localhost:8081/api/report
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+
