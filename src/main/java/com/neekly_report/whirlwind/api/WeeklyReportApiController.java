@@ -2,6 +2,7 @@ package com.neekly_report.whirlwind.api;
 
 import com.neekly_report.whirlwind.dto.WeeklyReportDto;
 import com.neekly_report.whirlwind.dto.UserDto;
+import com.neekly_report.whirlwind.entity.WeeklyReport;
 import com.neekly_report.whirlwind.service.WeeklyReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,7 +35,7 @@ public class WeeklyReportApiController {
      * 주간 팀 보고서 생성
      */
     @Operation(summary = "채팅용 자동 주간보고 생성")
-    @GetMapping("chat")
+    @PostMapping("chat")
     public ResponseEntity<String> requestMakeReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
                                                                                          @AuthenticationPrincipal UserDto.UserDetail userDetail) {
         return ResponseEntity.ok(weeklyReportService.requestReport(userDetail.getUserUid(), request.getChat()));
@@ -56,6 +57,14 @@ public class WeeklyReportApiController {
     public ResponseEntity<List<WeeklyReportDto.Response.SaveResponse>> getWeeklyReports(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
         return ResponseEntity.ok(weeklyReportService.getReportsByUser(userDetail.getUserUid()));
     }
+
+    @Operation(summary = "주간보고 상세 조회")
+    @GetMapping(value = "detail/{reportUid}")
+    public ResponseEntity<WeeklyReportDto.Response.WeeklyReportDetail> getWeeklyReports(@PathVariable String reportUid,
+                                                                                        @AuthenticationPrincipal UserDto.UserDetail userDetail) {
+        return ResponseEntity.ok(weeklyReportService.getReportsByUid(reportUid));
+    }
+
 
     /**
      * 주간 팀 보고서 (Markdown 형식)

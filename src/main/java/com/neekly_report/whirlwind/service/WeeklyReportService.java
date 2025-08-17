@@ -77,6 +77,11 @@ public class WeeklyReportService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public WeeklyReportDto.Response.WeeklyReportDetail getReportsByUid(String reportUid) {
+        return weeklyReportMapper.toWeeklyReportDetail(weeklyReportRepository.findByReportUid(reportUid));
+    }
+
     public WeeklyReportDto.Response.TextReport makeReport(WeeklyReportDto.Request.TextReport textReport, String userUid) {
         User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));

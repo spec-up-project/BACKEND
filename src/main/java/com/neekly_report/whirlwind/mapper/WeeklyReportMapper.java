@@ -17,5 +17,10 @@ public interface WeeklyReportMapper {
 
     WeeklyReportDto.Response.WeeklyReportResult toWeeklyReportResult(WeeklyReport report);
 
+
+    @Mapping(target = "createDate", source = "createDate")
+    @Mapping(target = "modifyDate", source = "modifyDate")
+    WeeklyReportDto.Response.WeeklyReportDetail toWeeklyReportDetail(WeeklyReport report);
+
     WeeklyReport toEntity(WeeklyReportDto.Response.WeeklyReportResult reportResult);
 }
