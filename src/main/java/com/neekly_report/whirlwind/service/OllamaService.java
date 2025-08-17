@@ -186,18 +186,20 @@ public class OllamaService {
         String prompt = """
             1. 다음 데이터 전체(일정 텍스트, 기존 일정 데이터)와 형식 예시를 바탕으로 주간 리포트를 텍스트 리스트 형식으로 단계별로 작성해줘.
             2. 기존 일정 데이터 json 내용도 합쳐서 작성해줘.
+            
+            오늘 날짜와 시간: %s
 
            형식:
                 ■ 대분류명
                   1. 중분류명
-                     1) 소분류명 Part : 제목 (종료 날짜)
+                     1) 소분류명 : 제목 (종료 날짜)
                     \s
           \s
             일정 텍스트:\s
                 %s
             기존 일정 데이터 json:\s
                 %s
-           \s""".formatted(request.getContent(), request.getWeekEvents());
+           \s""".formatted(request.getToday(), request.getContent(), request.getWeekEvents());
 
         return generateResponse(prompt);
     }

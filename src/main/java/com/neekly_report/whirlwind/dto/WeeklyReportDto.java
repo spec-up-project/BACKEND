@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class WeeklyReportDto {
@@ -39,10 +40,11 @@ public class WeeklyReportDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class WeeklyReportRequest {
+            private String today;
             private String userUid;
-            private String completionStats;
             private String content;
             private List<ScheduleDto.Response.CalendarEvent> weekEvents;
+            private List<ScheduleDto.Response.CalendarEvent> upcomingEvents;
         }
     }
 

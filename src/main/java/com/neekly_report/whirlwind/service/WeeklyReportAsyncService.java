@@ -66,17 +66,10 @@ public class WeeklyReportAsyncService {
         List<ScheduleDto.Response.CalendarEvent> upcomingEvents =
                 scheduleService.getUpcomingEvents(userUid);
 
-        // 통계 계산
-        WeeklyReportDto.Response.WeeklySummary summary = calculateWeeklySummary(
-                weekEvents);
-//        ExtractionDto.Response.ParsedExtractionData extractionData = extractionService.extractScheduleJson(chat, userUid);
-
-        String stats = String.format("완료율: %.1f%%, 생산성 점수: %d점",
-                summary.getCompletionRate(), summary.getProductivityScore());
-        log.info("ducking 합친 content 전체 = {}", chat + weekEvents);
+        log.info("chat 합친 content 전체 = {}", chat + weekEvents + upcomingEvents);
 
         String reportContent = ollamaService.generateWeeklyReport(new WeeklyReportDto.Request.WeeklyReportRequest(
-                userUid, stats, chat ,weekEvents
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), userUid, chat ,weekEvents, upcomingEvents
         ));
 
         String reportPeriod = startOfWeek.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
@@ -86,18 +79,8 @@ public class WeeklyReportAsyncService {
                 .reportDate(now)
                 .reportPeriod(reportPeriod)
                 .title(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고")
-                .summary(summary)
                 .upcomingEvents(upcomingEvents)
                 .reportContent(reportContent)
-                .build();
-    }
-    private WeeklyReportDto.Response.WeeklySummary calculateWeeklySummary(
-            List<ScheduleDto.Response.CalendarEvent> events) {
-
-        int totalEvents = events.size();
-
-        return WeeklyReportDto.Response.WeeklySummary.builder()
-                .totalEvents(totalEvents)
                 .build();
     }
 }

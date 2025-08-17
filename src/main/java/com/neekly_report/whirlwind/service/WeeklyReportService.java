@@ -54,6 +54,7 @@ public class WeeklyReportService {
         WeeklyReport report = new WeeklyReport();
         report.setUser(user);
         report.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고");
+        report.setRawText(chat);
         report.setStatus("REQUEST");
 
         WeeklyReport savedReport = weeklyReportRepository.save(report);
@@ -84,6 +85,7 @@ public class WeeklyReportService {
         WeeklyReport report = weeklyReportMapper.toEntity(textReport);
         report.setUser(user);
         report.setStatus("REQUEST");
+        report.setRawText(textReport.getContent());
         WeeklyReport savedReport = weeklyReportRepository.save(report);
 
         // 트랜잭션 커밋 이후에 비동기 호출
