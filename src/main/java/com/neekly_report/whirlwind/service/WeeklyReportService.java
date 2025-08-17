@@ -47,14 +47,18 @@ public class WeeklyReportService {
     private final ExcelReportGenerator excelReportGenerator;
 
     @Transactional
-    public String requestReport(String userUid, String chat) {
+    public String requestReport(String userUid, WeeklyReportDto.Request.WeeklyReportPreview request) {
         User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));
 
         WeeklyReport report = new WeeklyReport();
         report.setUser(user);
-        report.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고");
-        report.setRawText(chat);
+        if (request.getTitle() != null && !request.getTitle().isBlank()) {
+            report.setTitle(request.getTitle());
+        } else {
+            report.setTitle(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " 주간보고");
+        }
+        report.setRawText(request.getChat());
         report.setStatus("REQUEST");
 
         WeeklyReport savedReport = weeklyReportRepository.save(report);
@@ -63,7 +67,7 @@ public class WeeklyReportService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                weeklyReportAsyncService.generateContentAsync(savedReport.getReportUid(), userUid, chat);
+                weeklyReportAsyncService.generateContentAsync(savedReport.getReportUid(), userUid, request.getChat());
             }
         });
 

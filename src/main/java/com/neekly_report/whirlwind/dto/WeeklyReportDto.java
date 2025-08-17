@@ -13,7 +13,7 @@ public class WeeklyReportDto {
         @NoArgsConstructor
         @AllArgsConstructor
         public static class WeeklyReportPreview {
-
+            private String title;
             private String chat;
         }
         @Data

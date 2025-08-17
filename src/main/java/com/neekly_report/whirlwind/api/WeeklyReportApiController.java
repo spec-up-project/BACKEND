@@ -38,18 +38,7 @@ public class WeeklyReportApiController {
     @PostMapping("chat")
     public ResponseEntity<String> requestMakeReport(@RequestBody WeeklyReportDto.Request.WeeklyReportPreview request,
                                                                                          @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-        return ResponseEntity.ok(weeklyReportService.requestReport(userDetail.getUserUid(), request.getChat()));
-    }
-
-    /**
-     * 주간 보고서 (json 형식)
-     */
-    @Operation(summary = "팝업 내 자동 주간보고 생성")
-    @PostMapping("make")
-    public ResponseEntity<WeeklyReportDto.Response.TextReport> makeReport(@RequestBody WeeklyReportDto.Request.TextReport textReport,
-                                                                          @AuthenticationPrincipal UserDto.UserDetail userDetail) {
-
-        return ResponseEntity.ok(weeklyReportService.makeReport(textReport, userDetail.getUserUid()));
+        return ResponseEntity.ok(weeklyReportService.requestReport(userDetail.getUserUid(), request));
     }
 
     @Operation(summary = "전체 주간보고 조회")
