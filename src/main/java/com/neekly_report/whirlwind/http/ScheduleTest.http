@@ -33,7 +33,7 @@ GET http://localhost:8081/api/schedule
 Authorization: Bearer {{accessToken}}
 
 ### 사용자별 캘린더 자동 생성
-POST http://localhost:8081/api/schedule
+POST http://localhost:8081/api/schedule/auto
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 

@@ -54,7 +54,61 @@ public class ExtractionService {
     /**
      * 텍스트에서 일정/할일 추출
      */
-    public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(String chat, String userId) {
+    public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(
+            String chat, String userId) {
+
+        long startTime = System.currentTimeMillis();
+
+        try {
+            log.info("텍스트 추출 시작 - 사용자: {}, 텍스트 길이: {}자", userId, chat.length());
+
+            // 1. Ollama로 구조화된 데이터 추출
+            String structuredData = ollamaService.extractStructuredScheduleData(chat, LocalDateTime.now().toString());
+
+            // 2. JSON 파싱 및 엔터티 생성
+            ExtractionDto.Response.ParsedExtractionData parsedData = parseStructuredData(structuredData, chat);
+
+            // 3. 데이터베이스 저장
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다"));
+
+            List<ScheduleDto.Response.CalendarEvent> savedEvents =
+                    saveSchedules(parsedData.getSchedules(), user);
+
+            long processingTime = System.currentTimeMillis() - startTime;
+
+            log.info("텍스트 추출 완료 - 일정: {}개, 처리시간: {}ms",
+                    savedEvents.size(), processingTime);
+
+            return ExtractionDto.Response.ExtractionResult.builder()
+                    .schedules(savedEvents)
+                    .originalText(chat)
+                    .processedText(structuredData)
+                    .sourceType("TEXT")
+                    .processingTimeMs(processingTime)
+                    .success(true)
+                    .savedEventsCount(savedEvents.size())
+                    .build();
+
+        } catch (Exception e) {
+            long processingTime = System.currentTimeMillis() - startTime;
+            log.error("텍스트 추출 실패: {}", e.getMessage(), e);
+
+            return ExtractionDto.Response.ExtractionResult.builder()
+                    .originalText(chat)
+                    .sourceType("TEXT")
+                    .processingTimeMs(processingTime)
+                    .success(false)
+                    .errorMessage(e.getMessage())
+                    .build();
+        }
+    }
+
+
+    /**
+     * 텍스트에서 일정/할일 추출
+     */
+    public ExtractionDto.Response.ExtractionResult extractDatetimeFromTextForWeeklyReport(String chat, String userId) {
         long startTime = System.currentTimeMillis();
         try {
             // 사용자 조회
@@ -221,7 +275,7 @@ public class ExtractionService {
                             .sourceType("EMAIL")
                             .build();
 
-            ExtractionDto.Response.ExtractionResult result = extractDatetimeFromText(textRequest.getText(), userId);
+            ExtractionDto.Response.ExtractionResult result = extractDatetimeFromTextForWeeklyReport(textRequest.getText(), userId);
 
             // 3. 이메일 관련 정보 추가
             result.setOriginalText(emailContent);

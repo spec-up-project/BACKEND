@@ -180,19 +180,20 @@ public class OllamaService {
 
     /**
      * 주간 리포트 생성
+            2. 중간에 null로 보낸 데이터가 있으면 자리를 하나씩 당겨서 카테고리를 없애줘.
      */
     public String generateWeeklyReport(WeeklyReportDto.Request.WeeklyReportRequest request) {
         String prompt = """
-            다음 데이터와 포맷 예시를 바탕으로 주간 리포트를 텍스트 형식으로 생성해줘.
-            중간에 null로 보낸 데이터가 있으면 자리를 하나씩 당겨서 카테고리를 없애줘.
+            1. 다음 데이터와 형식 예시를 바탕으로 주간 리포트를 텍스트 리스트 형식으로 단계별로 작성해줘.
            \s
             완료 통계: %s
            \s
+           형식:
                 ■ 대분류명
                   1. 중분류명
                      1) 소분류명 Part : 제목 (종료 날짜)
                     \s
-            형식으로 작성해.
+           
             일정 데이터: %s
            \s""".formatted(request.getCompletionStats(), request.getContent());
 
