@@ -59,6 +59,9 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+bootRun {
+	jvmArgs = ["-Duser.timezone=Asia/Seoul"]
+}
 
 // 환경별 deployUrl 설정
 ext {
