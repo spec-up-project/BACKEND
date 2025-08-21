@@ -18,13 +18,11 @@ public class ScheduleDto {
 
         @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
         public static class ScheduleManualCreateRequest {
-            private String scheduleUid;
             private String title;
             private String content;
             private LocalDateTime startTime;
             private LocalDateTime endTime;
             private String rawText;
-            private String source; // "TEXT", "FILE"
             private Boolean isAllDay;
 
             private String categoryUid;
