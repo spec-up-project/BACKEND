@@ -75,9 +75,9 @@ public class WeeklyReportService {
     }
 
     @Transactional(readOnly = true)
-    public List<WeeklyReportDto.Response.SaveResponse> getReportsByUser(String userUid) {
+    public List<WeeklyReportDto.Response.WeeklyReportDetail> getReportsByUser(String userUid) {
         return weeklyReportRepository.findWeeklyReportByUser_UserUid(userUid).stream()
-                .map(weeklyReportMapper::toSaveResponse)
+                .map(weeklyReportMapper::toWeeklyReportDetail)
                 .collect(Collectors.toList());
     }
 

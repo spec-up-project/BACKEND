@@ -43,7 +43,7 @@ public class WeeklyReportApiController {
 
     @Operation(summary = "전체 주간보고 조회")
     @GetMapping
-    public ResponseEntity<List<WeeklyReportDto.Response.SaveResponse>> getWeeklyReports(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
+    public ResponseEntity<List<WeeklyReportDto.Response.WeeklyReportDetail>> getWeeklyReports(@AuthenticationPrincipal UserDto.UserDetail userDetail) {
         return ResponseEntity.ok(weeklyReportService.getReportsByUser(userDetail.getUserUid()));
     }
 
