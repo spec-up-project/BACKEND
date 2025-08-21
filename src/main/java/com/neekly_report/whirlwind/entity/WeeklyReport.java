@@ -1,0 +1,39 @@
+package com.neekly_report.whirlwind.entity;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "T_WEEKLY_REPORT")
+public class WeeklyReport extends Common {
+
+    @Id
+    @UuidGenerator
+    @GeneratedValue(generator = "UUID")
+    @Column(name = "T_REPORT_UID", updatable = false, nullable = false, columnDefinition = "CHAR(36)")
+    private String reportUid;
+
+    @Column(name = "TITLE")
+    private String title;
+
+    @Column(name = "CONTENT", columnDefinition = "MEDIUMTEXT")
+    private String content;
+
+    @Column(name = "RAW_TEXT", columnDefinition = "MEDIUMTEXT")
+    private String rawText;
+
+    @Column(name = "STATUS")
+    private String status; // 예: "REQUEST", "COMPLETE"
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "T_USER_UID", nullable = false)
+    private User user;
+
+
+}

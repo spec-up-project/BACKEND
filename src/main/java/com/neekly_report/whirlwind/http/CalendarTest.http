@@ -1,0 +1,33 @@
+### 내 일정 전체 조회
+GET http://localhost:8081/api/calendar
+Authorization: Bearer {{accessToken}}
+
+### 기간별 일정 조회
+GET http://localhost:8081/api/calendar/range?
+    startDate=2025-08-13&
+    endDate=2025-08-23
+Authorization: Bearer {{accessToken}}
+
+### 키워드로 일정 검색
+GET http://localhost:8081/api/calendar/search?
+    keyword=제목
+Authorization: Bearer {{accessToken}}
+
+### 캘린더 수동 일정 수정
+POST http://localhost:8081/api/schedule/update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "tScheduleUid": "8bd2ac38-5370-4b31-bfff-78b0568c2d76",
+  "title": "테스트 수정 윤정",
+  "content": "테스트 실행 수정수정",
+  "startTime": "2025-08-25T14:51:19.2181692",
+  "endTime": "",
+  "rawText": "",
+  "source": ""
+}
+
+###
+GET http://localhost:8081/api/report?
+    userId=38f54d40-1b13-4654-b739-dfdf6a708375

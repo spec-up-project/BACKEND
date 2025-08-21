@@ -1,1 +1,14 @@
-spring.application.name=whirlwind
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+app:
+  ollama:
+    url: ${APP_OLLAMA_URL:https://8130d49efeff.ngrok-free.app}
+    text-model: ${APP_OLLAMA_MODEL}
+    timeout-seconds: 600
+  duckling:
+    url: ${APP_DUCKLING_URL}
+    timeout-seconds: 10

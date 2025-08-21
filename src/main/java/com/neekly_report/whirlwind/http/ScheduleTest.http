@@ -1,0 +1,43 @@
+### 내 일정 전체 조회
+GET http://localhost:8081/api/calendar
+Authorization: Bearer {{accessToken}}
+
+### 기간별 일정 조회
+GET http://localhost:8081/api/calendar/range?
+    startDate=2025-08-13&
+    endDate=2025-08-23
+Authorization: Bearer {{accessToken}}
+
+### 키워드로 일정 검색
+GET http://localhost:8081/api/calendar/search?
+    keyword=제목
+Authorization: Bearer {{accessToken}}
+
+### 캘린더 수동 일정 수정
+POST http://localhost:8081/api/schedule/update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "scheduleUid": "8bd2ac38-5370-4b31-bfff-78b0568c2d76",
+  "title": "테스트 수정 윤정",
+  "content": "테스트 실행 수정수정",
+  "startTime": "2025-08-25T14:51:19.2181692",
+  "endTime": "",
+  "rawText": "",
+  "source": ""
+}
+
+### 내 스케줄 전체 조회
+GET http://localhost:8081/api/schedule/manual/calendar
+Authorization: Bearer {{accessToken}}
+
+### 사용자별 캘린더 자동 생성
+POST http://localhost:8081/api/schedule/auto
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "rawText": "오늘 오후 10시에는 hope 회의가 있고, 내일 오전 9시부터 클라우드 Assessment 회의가 있어. 수요일 오후 2시에는 보안 정책 검토 회의가 있고, 목요일 오전 11시에는 신규 서비스 런칭 관련 회의가 있어. 금요일 오후 4시에는 팀 회고 미팅이 예정되어 있어."
+
+}

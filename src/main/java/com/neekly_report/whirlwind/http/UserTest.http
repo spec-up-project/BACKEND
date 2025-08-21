@@ -1,0 +1,78 @@
+### 회원가입
+POST http://localhost:8081/api/user/register
+Content-Type: application/json
+
+{
+  "userName": "yoon",
+  "email": "email@email.com",
+  "password": "password"
+}
+
+### Token 발급
+POST http://localhost:8081/api/user/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "email@email.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("authorizationToken", "Bearer " + response.body.accessToken);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.log("JWT TOKEN ==> " + client.global.get("authorizationToken"));
+%}
+
+### 텍스트에서 일정/할일 추출
+POST http://localhost:8081/api/extract/text
+Content-Type: application/json
+Authorization: {{authorizationToken}}
+
+{
+  "text": "TEXT",
+  "sourceType": ""
+}
+
+### 캘린더 일정 목록
+GET http://localhost:8081/api/schedule
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+
+
+### 캘린더 수동 일정 저장
+POST http://localhost:8081/api/schedule/insert
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+{
+  "title": "테스트",
+  "content": "테스트",
+  "startTime": "",
+  "endTime": "",
+  "rawText": "",
+  "source": "",
+  "user": {}
+}
+
+### 캘린더 수동 일정 수정
+PUT http://localhost:8081/api/schedule/update
+Authorization: {{authorizationToken}}
+Content-Type: application/json
+
+{
+  "tScheduleUid": "39a705c7-7ea6-4e44-9d0b-bbfa6d7d5f92",
+  "title": "테스트 제목 수정",
+  "content": "테스트 실행 수정",
+  "startTime": "2025-08-25T14:51:19.2181692",
+  "endTime": "",
+  "rawText": "",
+  "source": "",
+  "user": {}
+}
+
+### 캘린더 수동 일정 삭제
+DELETE http://localhost:8081/api/schedule/delete/791b1937-e254-4b03-84ea-6006686637bd
+Authorization: {{authorizationToken}}
+Content-Type: application/json

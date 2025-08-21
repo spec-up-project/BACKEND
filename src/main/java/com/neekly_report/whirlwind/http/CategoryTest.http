@@ -1,0 +1,44 @@
+### Token 발급
+POST http://localhost:8081/api/user/login
+Content-Type: application/json;charset=UTF-8
+
+{
+  "email": "email@email.com",
+  "password": "password"
+}
+
+> {%
+    client.global.set("authorizationToken", "Bearer " + response.body.accessToken);
+    client.global.set("accessToken", response.body.accessToken);
+    client.global.set("refreshToken", response.body.refreshToken);
+    client.log("JWT TOKEN ==> " + client.global.get("authorizationToken"));
+%}
+
+### 사용자별 카테고리 조회
+GET http://localhost:8081/api/category
+Authorization: {{ authorizationToken }}
+
+### 사용자별 카테고리 등록
+POST http://localhost:8081/api/category/insert
+Authorization: {{ authorizationToken }}
+Content-Type: application/json
+
+{
+  "name": "대분류-2",
+  "depth": "1"
+}
+
+### 사용자별 카테고리 수정
+PUT http://localhost:8081/api/category/update
+Authorization: Bearer {{ refreshToken }}
+Content-Type: application/json
+
+{
+  "categoryUid": "2c7406ff-775b-44d9-87a0-aa995a4cddb1",
+  "categoryName": "대분류 수정",
+  "segType": "MAIN"
+}
+
+### 사용자별 카테고리 삭제
+DELETE http://localhost:8081/api/category/delete/ce83fd02-e920-4717-8e12-b53f52abd9b9
+Authorization: Bearer {{ refreshToken }}

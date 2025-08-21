@@ -5,13 +5,18 @@ plugins {
 }
 
 group = 'com.neekly-report'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
+
+jar {
+	enabled = false
+}
+
 
 configurations {
 	compileOnly {
@@ -27,15 +32,45 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+	implementation 'org.apache.poi:poi:5.2.3' // excel 다운로드
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'  // LocalDateTime 처리
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // WebClient for external API calls
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'  // DTO 매핑
+
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	// lombok보다 상단에 있으면 안됨
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+bootRun {
+	jvmArgs = ["-Duser.timezone=Asia/Seoul"]
+}
+
+// 환경별 deployUrl 설정
+ext {
+	deployUrl = 'http://localhost:8081/manager/text' // local 기본값
+}
+def env = project.hasProperty('env') ? project.getProperty('env') : 'local'
+
+if (env == 'dev') {
+	deployUrl = 'http://152.69.205.24:8081/manager/text'
+}
+
+println "Deploy URL: $deployUrl"
