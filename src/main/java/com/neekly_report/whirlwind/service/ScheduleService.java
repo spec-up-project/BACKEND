@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
@@ -33,7 +32,7 @@ public class ScheduleService {
     private final ScheduleMapper scheduleMapper;
     private final CategoryMapper categoryMapper;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public ScheduleDto.Response.ScheduleResponse insertSchedules(String userUid, ScheduleDto.Request.ScheduleManualCreateRequest request) {
         User user = userRepository.findById(userUid)
                 .orElseThrow(() -> new RuntimeException("사용자 없음"));

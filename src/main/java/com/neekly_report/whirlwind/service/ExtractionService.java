@@ -54,6 +54,7 @@ public class ExtractionService {
     /**
      * 텍스트에서 일정/할일 추출
      */
+    @Transactional
     public ExtractionDto.Response.ExtractionResult extractDatetimeFromText(
             String chat, String userId) {
 
@@ -108,6 +109,7 @@ public class ExtractionService {
     /**
      * 텍스트에서 일정/할일 추출
      */
+    @Transactional
     public ExtractionDto.Response.ExtractionResult extractDatetimeFromTextForWeeklyReport(String chat, String userId) {
         long startTime = System.currentTimeMillis();
         try {
@@ -294,6 +296,7 @@ public class ExtractionService {
     /**
      * 추출 미리보기 (저장하지 않음)
      */
+    @Transactional
     public ExtractionDto.Response.ExtractionPreview previewExtraction(
             ExtractionDto.Request.TextExtractionRequest request) {
 
